@@ -1,0 +1,8 @@
+# Frontend and Backend dependencies
+**/node_modules/
+
+# Build files
+**/dist/
+
+# Environment variables
+**/.env
