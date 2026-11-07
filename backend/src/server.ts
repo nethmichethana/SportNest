@@ -1,6 +1,7 @@
 import express, { Application } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import connectDB from "./config/db";
 
 
 dotenv.config();
@@ -22,6 +23,17 @@ app.get("/", (req, res) => {
 const PORT = process.env.PORT || 5000;
 
 
-app.listen(PORT, () => {
-  console.log(`SportNest server running on port ${PORT}`);
-});
+const startServer = async (): Promise<void> => {
+  try {
+    await connectDB();
+
+    app.listen(PORT, () => {
+      console.log(`SportNest server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Server startup failed:", error);
+    process.exit(1);
+  }
+};
+
+startServer();
