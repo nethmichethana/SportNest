@@ -50,9 +50,14 @@ function App() {
     fetchProducts();
   }, []);
 
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchTerm.trim().toLowerCase())
+  const filteredProducts = products.filter((product) => {
+  const search = searchTerm.trim().toLowerCase();
+
+  return (
+    product.name.toLowerCase().includes(search) ||
+    product.category.toLowerCase().includes(search)
   );
+});
 
   return (
     <div className="min-h-screen bg-white text-slate-900">
