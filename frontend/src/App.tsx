@@ -30,6 +30,7 @@ function App() {
   const [error, setError] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const [sortOption, setSortOption] = useState<string>("default");
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -64,6 +65,25 @@ function App() {
 
   return matchesSearch && matchesCategory;
   });
+
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+  switch (sortOption) {
+    case "price-low-high":
+      return a.price - b.price;
+
+    case "price-high-low":
+      return b.price - a.price;
+
+    case "name-a-z":
+      return a.name.localeCompare(b.name);
+
+    case "name-z-a":
+      return b.name.localeCompare(a.name);
+
+    default:
+      return 0;
+  }
+});
 
   return (
     <div className="min-h-screen bg-white text-slate-900">
@@ -205,21 +225,44 @@ function App() {
          All
         </button>
 
-  {categories.map((category) => (
-    <button
-      key={category.name}
-      onClick={() => setSelectedCategory(category.name)}
-      className={`rounded-full px-5 py-2 font-semibold transition ${
-        selectedCategory === category.name
+        {categories.map((category) => (
+        <button
+         key={category.name}
+         onClick={() => setSelectedCategory(category.name)}
+         className={`rounded-full px-5 py-2 font-semibold transition ${
+         selectedCategory === category.name
           ? "bg-blue-600 text-white"
           : "bg-white text-slate-700 hover:bg-blue-50"
-      }`}
-    >
-      {category.icon} {category.name}
-    </button>
-  ))}
-</div>
-        </div>
+        }`}
+        >
+       {category.icon} {category.name}
+       </button>
+       ))}
+       </div>
+      </div>
+
+      {/* Product Sorting Dropdown */}
+      <div className="mt-6 max-w-xs">
+      <label
+       htmlFor="sortProducts"
+       className="mb-2 block font-semibold text-slate-700"
+      >
+       Sort Products:
+      </label>
+
+       <select
+       id="sortProducts"
+       value={sortOption}
+       onChange={(e) => setSortOption(e.target.value)}
+       className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 outline-none focus:border-blue-500"
+      >
+      <option value="default">Default</option>
+      <option value="price-low-high">Price: Low to High</option>
+      <option value="price-high-low">Price: High to Low</option>
+      <option value="name-a-z">Name: A to Z</option>
+      <option value="name-z-a">Name: Z to A</option>
+     </select>
+     </div>  
 
           {/* Loading */}
           {loading && (
@@ -269,7 +312,7 @@ function App() {
      </div>
     )}
               
-              {filteredProducts.map((product) => (
+              {sortedProducts.map((product) => (
                 <article
                   key={product._id}
                   className="overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-1 hover:shadow-xl"
