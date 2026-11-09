@@ -54,11 +54,16 @@ function App() {
   const filteredProducts = products.filter((product) => {
   const search = searchTerm.trim().toLowerCase();
 
-  return (
+  const matchesSearch =
     product.name.toLowerCase().includes(search) ||
-    product.category.toLowerCase().includes(search)
-  );
-});
+    product.category.toLowerCase().includes(search);
+
+  const matchesCategory =
+    selectedCategory === "All" ||
+    product.category === selectedCategory;
+
+  return matchesSearch && matchesCategory;
+  });
 
   return (
     <div className="min-h-screen bg-white text-slate-900">
