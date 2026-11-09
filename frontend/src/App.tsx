@@ -29,7 +29,6 @@ function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
 
- 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -195,7 +194,7 @@ function App() {
                   <div className="relative flex h-52 items-center justify-center bg-slate-100">
                     {product.imageUrl ? (
                       <img
-                        src={product.imageUrl}
+                        src={`/images/${product.imageUrl}`}
                         alt={product.name}
                         className="h-full w-full object-cover"
                       />
