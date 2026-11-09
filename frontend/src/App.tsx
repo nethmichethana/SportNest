@@ -243,6 +243,32 @@ function App() {
           {/* Display products from MongoDB */}
           {!loading && !error && products.length > 0 && (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+
+          {/* No Products Found Message */}
+        {!loading && !error && filteredProducts.length === 0 && (
+         <div className="col-span-full py-12 text-center">
+           <div className="text-6xl">🔍</div>
+
+           <h3 className="mt-4 text-2xl font-bold text-slate-800">
+             No Products Found
+           </h3>
+
+       <p className="mt-2 text-slate-500">
+          Sorry, we couldn't find any products matching your search.
+       </p>
+
+      <button
+         onClick={() => {
+         setSearchTerm("");
+         setSelectedCategory("All");
+        }}
+        className="mt-5 rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-700"
+      >
+        Clear Filters
+      </button>
+     </div>
+    )}
+              
               {filteredProducts.map((product) => (
                 <article
                   key={product._id}
