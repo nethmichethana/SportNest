@@ -28,6 +28,7 @@ function App() {
 
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -159,9 +160,23 @@ function App() {
           <div className="mb-10">
             <p className="font-bold uppercase tracking-widest text-blue-600">Our Collection</p>
             <h2 className="mt-2 text-3xl font-black md:text-4xl">Featured Products</h2>
+          
             <p className="mt-3 text-slate-500">
               Quality equipment to help you perform at your best.
             </p>
+        {/* Product Search Bar */}
+          <div className="mt-6 max-w-xl">
+            <div className="flex items-center gap-3 rounded-xl border border-slate-300 bg-white px-4 py-3 shadow-sm focus-within:border-blue-500">
+              <span className="text-xl">🔍</span>
+           <input
+            type="text"
+            placeholder="Search products by name..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full bg-transparent outline-none"
+            />
+           </div>
+          </div>
           </div>
 
           {/* Loading */}
