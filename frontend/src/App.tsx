@@ -29,6 +29,7 @@ function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -186,7 +187,34 @@ function App() {
             />
            </div>
           </div>
-          </div>
+          {/* Category Filter Buttons */}
+         <div className="mt-6 flex flex-wrap gap-3">
+          <button
+           onClick={() => setSelectedCategory("All")}
+           className={`rounded-full px-5 py-2 font-semibold transition ${
+           selectedCategory === "All"
+           ? "bg-blue-600 text-white"
+           : "bg-white text-slate-700 hover:bg-blue-50"
+          }`}
+          >
+         All
+        </button>
+
+  {categories.map((category) => (
+    <button
+      key={category.name}
+      onClick={() => setSelectedCategory(category.name)}
+      className={`rounded-full px-5 py-2 font-semibold transition ${
+        selectedCategory === category.name
+          ? "bg-blue-600 text-white"
+          : "bg-white text-slate-700 hover:bg-blue-50"
+      }`}
+    >
+      {category.icon} {category.name}
+    </button>
+  ))}
+</div>
+        </div>
 
           {/* Loading */}
           {loading && (
