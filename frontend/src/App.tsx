@@ -50,6 +50,10 @@ function App() {
     fetchProducts();
   }, []);
 
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(searchTerm.trim().toLowerCase())
+  );
+
   return (
     <div className="min-h-screen bg-white text-slate-900">
       {/* Navigation */}
@@ -201,7 +205,7 @@ function App() {
           {/* Display products from MongoDB */}
           {!loading && !error && products.length > 0 && (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {products.map((product) => (
+              {filteredProducts.map((product) => (
                 <article
                   key={product._id}
                   className="overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-1 hover:shadow-xl"
