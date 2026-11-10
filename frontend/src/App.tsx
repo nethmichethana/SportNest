@@ -118,6 +118,23 @@ function App() {
   0
 );
 
+const updateCartQuantity = (productId: string, change: number) => {
+  setCart((previousCart) =>
+    previousCart
+      .map((item) =>
+        item._id === productId
+          ? {
+              ...item,
+              quantity: Math.max(
+                1,
+                Math.min(item.quantity + change, item.stockQuantity)
+              ),
+            }
+          : item
+      )
+  );
+};
+
   return (
     <div className="min-h-screen bg-white text-slate-900">
       {/* Navigation */}
@@ -200,7 +217,36 @@ function App() {
                   <p className="text-sm text-slate-500">
                     Rs. {item.price.toLocaleString("en-LK")} × {item.quantity}
                   </p>
-                </div>
+                </div><div className="flex-1">
+                <h3 className="font-semibold">{item.name}</h3>
+
+               <p className="mt-1 text-sm text-slate-500">
+               Rs. {item.price.toLocaleString("en-LK")}
+               </p>
+
+              {/* Quantity Controls */}
+              <div className="mt-3 flex items-center gap-3">
+              <button
+               type="button"
+               onClick={() => updateCartQuantity(item._id, -1)}
+               disabled={item.quantity <= 1}
+               className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-300 font-bold hover:bg-slate-100 disabled:opacity-40"
+              >
+              −
+             </button>
+
+             <span className="font-semibold">{item.quantity}</span>
+
+             <button
+             type="button"
+             onClick={() => updateCartQuantity(item._id, 1)}
+             disabled={item.quantity >= item.stockQuantity}
+             className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-300 font-bold hover:bg-slate-100 disabled:opacity-40"
+             >
+             +
+            </button>
+            </div>
+           </div>
 
                 <p className="font-bold">
                   Rs. {(item.price * item.quantity).toLocaleString("en-LK")}
