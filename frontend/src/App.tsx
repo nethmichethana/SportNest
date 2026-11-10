@@ -32,6 +32,7 @@ function App() {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [sortOption, setSortOption] = useState<string>("default");
   const [cart, setCart] = useState<(Product & { quantity: number })[]>([]);
+  const [showCart, setShowCart] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -106,19 +107,30 @@ function App() {
   });
 };
 
+
+ const cartItemCount = cart.reduce(
+  (total, item) => total + item.quantity,
+  0
+);
+ 
+ const cartTotal = cart.reduce(
+  (total, item) => total + item.price * item.quantity,
+  0
+);
+
   return (
     <div className="min-h-screen bg-white text-slate-900">
       {/* Navigation */}
       
      <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
-    <nav className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4">
+     <nav className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4">
 
-    {/* Logo */}
+     {/* Logo */}
      <a href="#home" className="shrink-0 text-2xl font-black tracking-tight">
       Sport<span className="text-blue-600">Nest.</span>
      </a>
 
-    {/* Navigation Links */}
+     {/* Navigation Links */}
     <div className="hidden items-center gap-7 lg:flex">
       <a href="#home" className="font-medium hover:text-blue-600">Home</a>
       <a href="#categories" className="font-medium hover:text-blue-600">Categories</a>
@@ -139,18 +151,75 @@ function App() {
         Shop Now
       </a>
 
-      {/* Shopping Cart Count */}
-      <div className="flex items-center gap-2 whitespace-nowrap rounded-lg bg-blue-600 px-4 py-2.5 font-semibold text-white">
-        <span className="text-xl">🛒</span>
-        <span>
-          Cart ({cart.reduce((total, item) => total + item.quantity, 0)})
-        </span>
-      </div>
+      {/* Shopping Cart Button */}
+      <button
+      type="button"
+      onClick={() => setShowCart(!showCart)}
+      className="flex items-center gap-2 whitespace-nowrap rounded-lg bg-blue-600 px-4 py-2.5 font-semibold text-white transition hover:bg-blue-700"
+      >
+      <span className="text-xl">🛒</span>
+
+      <span>Cart ({cartItemCount})</span>
+      </button>
     </div>
+   </nav>
+  </header>
 
-  </nav>
-</header>
 
+{/* Shopping Cart Panel */}
+{showCart && (
+  <section className="sticky top-20 z-40 mx-auto max-w-7xl px-6">
+    <div className="ml-auto mt-4 max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl">
+
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold">Shopping Cart 🛒</h2>
+
+        <button
+          type="button"
+          onClick={() => setShowCart(false)}
+          className="text-2xl font-bold text-slate-500 hover:text-red-500"
+        >
+          ×
+        </button>
+      </div>
+
+      {cart.length === 0 ? (
+        <p className="mt-6 text-center text-slate-500">
+          Your cart is empty.
+        </p>
+      ) : (
+        <>
+          <div className="mt-5 space-y-4">
+            {cart.map((item) => (
+              <div
+                key={item._id}
+                className="flex items-center justify-between gap-3 border-b border-slate-200 pb-4"
+              >
+                <div>
+                  <h3 className="font-semibold">{item.name}</h3>
+                  <p className="text-sm text-slate-500">
+                    Rs. {item.price.toLocaleString("en-LK")} × {item.quantity}
+                  </p>
+                </div>
+
+                <p className="font-bold">
+                  Rs. {(item.price * item.quantity).toLocaleString("en-LK")}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-5 flex items-center justify-between border-t pt-4">
+            <span className="font-bold">Total:</span>
+            <span className="text-xl font-black text-blue-600">
+              Rs. {cartTotal.toLocaleString("en-LK")}
+            </span>
+          </div>
+        </>
+      )}
+    </div>
+  </section>
+)}
 
       {/* Hero Section */}
       <section id="home" className="bg-slate-950 text-white">
