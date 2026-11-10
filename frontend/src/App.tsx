@@ -33,7 +33,7 @@ function App() {
   const [sortOption, setSortOption] = useState<string>("default");
   const [cart, setCart] = useState<(Product & { quantity: number })[]>([]);
   const [showCart, setShowCart] = useState<boolean>(false);
-
+  
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -132,6 +132,12 @@ const updateCartQuantity = (productId: string, change: number) => {
             }
           : item
       )
+  );
+};
+
+const removeFromCart = (productId: string) => {
+  setCart((previousCart) =>
+    previousCart.filter((item) => item._id !== productId)
   );
 };
 
@@ -248,9 +254,20 @@ const updateCartQuantity = (productId: string, change: number) => {
             </div>
            </div>
 
+                <div className="flex flex-col items-end gap-3">
                 <p className="font-bold">
-                  Rs. {(item.price * item.quantity).toLocaleString("en-LK")}
+                 Rs. {(item.price * item.quantity).toLocaleString("en-LK")}
                 </p>
+
+               {/* Remove Product Button */}
+               <button
+               type="button"
+               onClick={() => removeFromCart(item._id)}
+               className="text-sm font-semibold text-red-500 transition hover:text-red-700"
+               >
+               Remove
+               </button>
+                </div>
               </div>
             ))}
           </div>
