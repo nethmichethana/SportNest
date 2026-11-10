@@ -141,6 +141,10 @@ const removeFromCart = (productId: string) => {
   );
 };
 
+const clearCart = () => {
+  setCart([]);
+}
+
   return (
     <div className="min-h-screen bg-white text-slate-900">
       {/* Navigation */}
@@ -278,6 +282,15 @@ const removeFromCart = (productId: string) => {
               Rs. {cartTotal.toLocaleString("en-LK")}
             </span>
           </div>
+
+          {/* Clear Cart Button */}
+         <button
+          type="button"
+          onClick={clearCart}
+          className="mt-5 w-full rounded-lg border border-red-500 py-3 font-semibold text-red-500 transition hover:bg-red-500 hover:text-white"
+          >
+           Clear Cart
+           </button>
         </>
       )}
     </div>
