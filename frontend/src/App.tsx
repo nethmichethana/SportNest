@@ -109,27 +109,48 @@ function App() {
   return (
     <div className="min-h-screen bg-white text-slate-900">
       {/* Navigation */}
-      <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
-        <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <a href="#" className="text-2xl font-black tracking-tight">
-            Sport<span className="text-blue-600">Nest.</span>
-          </a>
+      
+     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
+    <nav className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4">
 
-          <div className="hidden items-center gap-8 md:flex">
-            <a href="#home" className="font-medium hover:text-blue-600">Home</a>
-            <a href="#categories" className="font-medium hover:text-blue-600">Categories</a>
-            <a href="#products" className="font-medium hover:text-blue-600">Products</a>
-            <a href="#about" className="font-medium hover:text-blue-600">About</a>
-          </div>
+    {/* Logo */}
+     <a href="#home" className="shrink-0 text-2xl font-black tracking-tight">
+      Sport<span className="text-blue-600">Nest.</span>
+     </a>
 
-          <div className="flex items-center gap-3">
-            <a href="#login" className="hidden font-semibold sm:block">Login</a>
-            <a href="#products" className="rounded-lg bg-blue-600 px-5 py-2.5 font-semibold text-white hover:bg-blue-700">
-              Shop Now
-            </a>
-          </div>
-        </nav>
-      </header>
+    {/* Navigation Links */}
+    <div className="hidden items-center gap-7 lg:flex">
+      <a href="#home" className="font-medium hover:text-blue-600">Home</a>
+      <a href="#categories" className="font-medium hover:text-blue-600">Categories</a>
+      <a href="#products" className="font-medium hover:text-blue-600">Products</a>
+      <a href="#about" className="font-medium hover:text-blue-600">About</a>
+    </div>
+
+    {/* Login, Shop Now and Cart */}
+    <div className="flex shrink-0 items-center gap-3">
+      <a href="#login" className="hidden font-semibold sm:block">
+        Login
+      </a>
+
+      <a
+        href="#products"
+        className="rounded-lg bg-blue-600 px-4 py-2.5 font-semibold text-white transition hover:bg-blue-700"
+      >
+        Shop Now
+      </a>
+
+      {/* Shopping Cart Count */}
+      <div className="flex items-center gap-2 whitespace-nowrap rounded-lg bg-blue-600 px-4 py-2.5 font-semibold text-white">
+        <span className="text-xl">🛒</span>
+        <span>
+          Cart ({cart.reduce((total, item) => total + item.quantity, 0)})
+        </span>
+      </div>
+    </div>
+
+  </nav>
+</header>
+
 
       {/* Hero Section */}
       <section id="home" className="bg-slate-950 text-white">
