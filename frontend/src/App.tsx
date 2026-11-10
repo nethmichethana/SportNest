@@ -31,6 +31,7 @@ function App() {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [sortOption, setSortOption] = useState<string>("default");
+  const [cart, setCart] = useState<(Product & { quantity: number })[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -84,6 +85,26 @@ function App() {
       return 0;
   }
 });
+
+
+   const addToCart = (product: Product) => {
+   setCart((previousCart) => {
+   const existingProduct = previousCart.find(
+      (item) => item._id === product._id
+    );
+
+    if (existingProduct) {
+      return previousCart.map((item) =>
+        item._id === product._id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      );
+    }
+
+   
+    return [...previousCart, { ...product, quantity: 1 }];
+  });
+};
 
   return (
     <div className="min-h-screen bg-white text-slate-900">
@@ -355,6 +376,16 @@ function App() {
                     <p className="mt-2 text-sm text-slate-500">
                       Stock: {product.stockQuantity}
                     </p>
+
+                    {/* Add to Cart Button */}
+                    <button
+                    type="button"
+                    onClick={() => addToCart(product)}
+                    disabled={product.stockQuantity <= 0 || !product.isActive}
+                    className="mt-4 w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-400"
+                    >
+                    🛒 Add to Cart
+                    </button> 
 
                     <button
                       type="button"
