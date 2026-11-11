@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import type { Product } from "./types/Product";
 import { getAllProducts } from "./services/productService";
+import API from "./services/api";
 
 const categories = [
   { name: "Football", icon: "⚽", count: "120+ Products" },
@@ -40,6 +41,9 @@ function App() {
   phone: "",
   address: "",
 });
+ const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+ const [orderMessage, setOrderMessage] = useState<string>("");
+ const [orderError, setOrderError] = useState<string>("");
   
   useEffect(() => {
     const fetchProducts = async () => {
@@ -151,6 +155,54 @@ const removeFromCart = (productId: string) => {
 const clearCart = () => {
   setCart([]);
 }
+
+const handlePlaceOrder = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+
+  if (cart.length === 0) {
+    setOrderError("Your cart is empty.");
+    return;
+  }
+
+  try {
+    setIsSubmitting(true);
+    setOrderMessage("");
+    setOrderError("");
+
+    const orderData = {
+      ...customerDetails,
+      items: cart.map((item) => ({
+        productId: item._id,
+        quantity: item.quantity,
+      })),
+    };
+
+    await API.post("/orders", orderData);
+
+    setOrderMessage("Order placed successfully! Thank you for shopping with SportNest.");
+
+    setCart([]);
+
+    setCustomerDetails({
+      customerName: "",
+      email: "",
+      phone: "",
+      address: "",
+    });
+
+    const updatedProducts = await getAllProducts();
+    setProducts(updatedProducts);
+
+  } catch (error) {
+    const message = (
+      error as { response?: { data?: { message?: string } } }
+    ).response?.data?.message;
+
+    setOrderError(message || "Failed to place order. Please try again.");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-white text-slate-900">
@@ -590,36 +642,71 @@ const clearCart = () => {
       </section>
 
 
-{/* Checkout Form */}
-{showCheckout && (
-  <section className="mx-auto max-w-7xl px-6 py-10">
-    <div className="mx-auto max-w-2xl rounded-2xl border border-slate-200 bg-white p-8 shadow-lg">
 
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-2xl font-black">
-          Checkout Details
+{/* Checkout Modal */}
+{showCheckout && (
+  <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 px-4 py-6 backdrop-blur-sm">
+
+    <div className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl sm:p-8">
+
+      {/* Close Button */}
+      <button
+        type="button"
+        onClick={() => setShowCheckout(false)}
+        className="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-xl font-bold text-slate-600 transition hover:bg-red-100 hover:text-red-600"
+      >
+        ×
+      </button>
+
+      {/* Heading */}
+      <div className="mb-6 pr-10">
+        <p className="font-bold uppercase tracking-widest text-blue-600">
+          SportNest Checkout
+        </p>
+
+        <h2 className="mt-2 text-3xl font-black text-slate-900">
+          Complete Your Order
         </h2>
 
-        <button
-          type="button"
-          onClick={() => setShowCheckout(false)}
-          className="text-2xl font-bold text-slate-500 hover:text-red-500"
-        >
-          ×
-        </button>
+        <p className="mt-2 text-slate-500">
+          Enter your delivery information to place your order.
+        </p>
       </div>
 
-      <p className="mb-6 text-slate-500">
-        Please enter your delivery information.
-      </p>
+      {/* Order Total */}
+      <div className="mb-6 flex items-center justify-between rounded-xl bg-blue-50 p-4">
+        <span className="font-semibold text-slate-700">
+          Order Total
+        </span>
 
-      <form onSubmit={(e) => e.preventDefault()} className="space-y-5">
+        <span className="text-xl font-black text-blue-600">
+          Rs. {cartTotal.toLocaleString("en-LK")}
+        </span>
+      </div>
+
+      {/* Checkout Form */}
+      <form onSubmit={handlePlaceOrder} className="space-y-5">
+
+        {/* Success Message */}
+        {orderMessage && (
+          <p className="rounded-lg bg-green-100 p-3 text-green-700">
+            {orderMessage}
+          </p>
+        )}
+
+        {/* Error Message */}
+        {orderError && (
+          <p className="rounded-lg bg-red-100 p-3 text-red-700">
+            {orderError}
+          </p>
+        )}
 
         {/* Customer Name */}
         <div>
           <label className="mb-2 block font-semibold">
             Customer Name
           </label>
+
           <input
             type="text"
             required
@@ -640,6 +727,7 @@ const clearCart = () => {
           <label className="mb-2 block font-semibold">
             Email Address
           </label>
+
           <input
             type="email"
             required
@@ -660,6 +748,7 @@ const clearCart = () => {
           <label className="mb-2 block font-semibold">
             Phone Number
           </label>
+
           <input
             type="tel"
             required
@@ -680,9 +769,10 @@ const clearCart = () => {
           <label className="mb-2 block font-semibold">
             Delivery Address
           </label>
+
           <textarea
             required
-            rows={4}
+            rows={3}
             value={customerDetails.address}
             onChange={(e) =>
               setCustomerDetails({
@@ -695,16 +785,19 @@ const clearCart = () => {
           />
         </div>
 
+        {/* Place Order */}
         <button
-          type="button"
-          className="w-full rounded-lg bg-blue-600 py-3 font-bold text-white transition hover:bg-blue-700"
+          type="submit"
+          disabled={isSubmitting || cart.length === 0}
+          className="w-full rounded-lg bg-blue-600 py-4 font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-400"
         >
-          Place Order
+          {isSubmitting ? "Placing Order..." : "Place Order"}
         </button>
 
       </form>
+
     </div>
-  </section>
+  </div>
 )}
 
 
