@@ -35,6 +35,7 @@ function App() {
   const [cart, setCart] = useState<(Product & { quantity: number })[]>([]);
   const [showCart, setShowCart] = useState<boolean>(false);
   const [showCheckout, setShowCheckout] = useState<boolean>(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [customerDetails, setCustomerDetails] = useState({
   customerName: "",
   email: "",
@@ -628,10 +629,11 @@ const handlePlaceOrder = async (e: React.FormEvent<HTMLFormElement>) => {
                     </button> 
 
                     <button
-                      type="button"
-                      className="mt-5 w-full rounded-lg border border-blue-600 py-2.5 font-semibold text-blue-600 transition hover:bg-blue-600 hover:text-white"
+                    type="button"
+                    onClick={() => setSelectedProduct(product)}
+                    className="mt-5 w-full rounded-lg border border-blue-600 py-2.5 font-semibold text-blue-600 transition hover:bg-blue-600 hover:text-white"
                     >
-                      View Details
+                    View Details
                     </button>
                   </div>
                 </article>
