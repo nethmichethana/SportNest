@@ -802,6 +802,89 @@ const handlePlaceOrder = async (e: React.FormEvent<HTMLFormElement>) => {
   </div>
 )}
 
+{/* Product Details Modal */}
+{selectedProduct && (
+  <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/60 px-4 py-6 backdrop-blur-sm">
+
+    <div className="relative max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl sm:p-8">
+
+      {/* Close Button */}
+      <button
+        type="button"
+        onClick={() => setSelectedProduct(null)}
+        className="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-xl font-bold text-slate-600 hover:bg-red-100 hover:text-red-600"
+      >
+        ×
+      </button>
+
+      <div className="grid gap-8 md:grid-cols-2">
+
+        {/* Product Image */}
+        <div className="flex min-h-64 items-center justify-center overflow-hidden rounded-2xl bg-slate-100">
+          {selectedProduct.imageUrl ? (
+            <img
+              src={`/images/${selectedProduct.imageUrl}`}
+              alt={selectedProduct.name}
+              className="h-full max-h-80 w-full object-cover"
+            />
+          ) : (
+            <span className="text-8xl">
+              {getCategoryIcon(selectedProduct.category)}
+            </span>
+          )}
+        </div>
+
+        {/* Product Information */}
+        <div className="flex flex-col justify-center">
+
+          <p className="font-bold uppercase tracking-widest text-blue-600">
+            {selectedProduct.category}
+          </p>
+
+          <h2 className="mt-3 text-3xl font-black text-slate-900">
+            {selectedProduct.name}
+          </h2>
+
+          <p className="mt-4 leading-7 text-slate-500">
+            {selectedProduct.description}
+          </p>
+
+          <p className="mt-5 text-3xl font-black text-blue-600">
+            Rs. {selectedProduct.price.toLocaleString("en-LK")}
+          </p>
+
+          <p className="mt-3 text-sm font-semibold text-slate-600">
+            Stock Available: {selectedProduct.stockQuantity}
+          </p>
+
+          <p className={`mt-2 text-sm font-bold ${
+            selectedProduct.isActive ? "text-green-600" : "text-red-600"
+          }`}>
+            {selectedProduct.isActive ? "Available" : "Unavailable"}
+          </p>
+
+          {/* Add to Cart */}
+          <button
+            type="button"
+            onClick={() => {
+              addToCart(selectedProduct);
+              setSelectedProduct(null);
+            }}
+            disabled={
+              selectedProduct.stockQuantity <= 0 ||
+              !selectedProduct.isActive
+            }
+            className="mt-6 w-full rounded-lg bg-blue-600 py-3 font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-400"
+          >
+            🛒 Add to Cart
+          </button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
 
       {/* About */}
       <section id="about" className="mx-auto max-w-7xl px-6 py-20 text-center">
