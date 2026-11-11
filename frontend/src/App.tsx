@@ -33,6 +33,13 @@ function App() {
   const [sortOption, setSortOption] = useState<string>("default");
   const [cart, setCart] = useState<(Product & { quantity: number })[]>([]);
   const [showCart, setShowCart] = useState<boolean>(false);
+  const [showCheckout, setShowCheckout] = useState<boolean>(false);
+  const [customerDetails, setCustomerDetails] = useState({
+  customerName: "",
+  email: "",
+  phone: "",
+  address: "",
+});
   
   useEffect(() => {
     const fetchProducts = async () => {
@@ -291,11 +298,26 @@ const clearCart = () => {
           >
            Clear Cart
            </button>
+
+           {/* Checkout Button */}
+           <button
+           type="button"
+           onClick={() => {
+           setShowCart(false);
+           setShowCheckout(true);
+           console.log("Checkout opened:", true);
+           }}
+          className="mt-3 w-full rounded-lg bg-blue-600 py-3 font-semibold text-white transition hover:bg-blue-700"
+           >
+          Proceed to Checkout
+         </button>
         </>
       )}
     </div>
   </section>
 )}
+
+
 
       {/* Hero Section */}
       <section id="home" className="bg-slate-950 text-white">
@@ -566,6 +588,125 @@ const clearCart = () => {
           )}
         </div>
       </section>
+
+
+{/* Checkout Form */}
+{showCheckout && (
+  <section className="mx-auto max-w-7xl px-6 py-10">
+    <div className="mx-auto max-w-2xl rounded-2xl border border-slate-200 bg-white p-8 shadow-lg">
+
+      <div className="mb-6 flex items-center justify-between">
+        <h2 className="text-2xl font-black">
+          Checkout Details
+        </h2>
+
+        <button
+          type="button"
+          onClick={() => setShowCheckout(false)}
+          className="text-2xl font-bold text-slate-500 hover:text-red-500"
+        >
+          ×
+        </button>
+      </div>
+
+      <p className="mb-6 text-slate-500">
+        Please enter your delivery information.
+      </p>
+
+      <form onSubmit={(e) => e.preventDefault()} className="space-y-5">
+
+        {/* Customer Name */}
+        <div>
+          <label className="mb-2 block font-semibold">
+            Customer Name
+          </label>
+          <input
+            type="text"
+            required
+            value={customerDetails.customerName}
+            onChange={(e) =>
+              setCustomerDetails({
+                ...customerDetails,
+                customerName: e.target.value,
+              })
+            }
+            placeholder="Enter your full name"
+            className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-blue-500"
+          />
+        </div>
+
+        {/* Email */}
+        <div>
+          <label className="mb-2 block font-semibold">
+            Email Address
+          </label>
+          <input
+            type="email"
+            required
+            value={customerDetails.email}
+            onChange={(e) =>
+              setCustomerDetails({
+                ...customerDetails,
+                email: e.target.value,
+              })
+            }
+            placeholder="Enter your email"
+            className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-blue-500"
+          />
+        </div>
+
+        {/* Phone */}
+        <div>
+          <label className="mb-2 block font-semibold">
+            Phone Number
+          </label>
+          <input
+            type="tel"
+            required
+            value={customerDetails.phone}
+            onChange={(e) =>
+              setCustomerDetails({
+                ...customerDetails,
+                phone: e.target.value,
+              })
+            }
+            placeholder="Enter your phone number"
+            className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-blue-500"
+          />
+        </div>
+
+        {/* Delivery Address */}
+        <div>
+          <label className="mb-2 block font-semibold">
+            Delivery Address
+          </label>
+          <textarea
+            required
+            rows={4}
+            value={customerDetails.address}
+            onChange={(e) =>
+              setCustomerDetails({
+                ...customerDetails,
+                address: e.target.value,
+              })
+            }
+            placeholder="Enter your delivery address"
+            className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-blue-500"
+          />
+        </div>
+
+        <button
+          type="button"
+          className="w-full rounded-lg bg-blue-600 py-3 font-bold text-white transition hover:bg-blue-700"
+        >
+          Place Order
+        </button>
+
+      </form>
+    </div>
+  </section>
+)}
+
 
       {/* About */}
       <section id="about" className="mx-auto max-w-7xl px-6 py-20 text-center">
