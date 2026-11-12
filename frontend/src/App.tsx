@@ -348,13 +348,39 @@ const handleLogout = () => {
       Sport<span className="text-blue-600">Nest.</span>
      </a>
 
+    
      {/* Navigation Links */}
-    <div className="hidden items-center gap-7 lg:flex">
-      <a href="#home" className="font-medium hover:text-blue-600">Home</a>
-      <a href="#categories" className="font-medium hover:text-blue-600">Categories</a>
-      <a href="#products" className="font-medium hover:text-blue-600">Products</a>
-      <a href="#about" className="font-medium hover:text-blue-600">About</a>
-    </div>
+    <div className="hidden items-center gap-2 rounded-full border border-grey/50 bg-white/60 p-2 shadow-lg shadow-blue-100/40 backdrop-blur-xl lg:flex">
+
+  <a
+    href="#home"
+    className="rounded-full px-5 py-2.5 text-sm font-bold text-slate-700 transition-all duration-300 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-blue-600 hover:to-indigo-600 hover:text-white hover:shadow-lg hover:shadow-blue-200"
+  >
+    Home
+  </a>
+
+  <a
+    href="#categories"
+    className="rounded-full px-5 py-2.5 text-sm font-bold text-slate-700 transition-all duration-300 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-blue-600 hover:to-indigo-600 hover:text-white hover:shadow-lg hover:shadow-blue-200"
+  >
+    Categories
+  </a>
+
+  <a
+    href="#products"
+    className="rounded-full px-5 py-2.5 text-sm font-bold text-slate-700 transition-all duration-300 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-blue-600 hover:to-indigo-600 hover:text-white hover:shadow-lg hover:shadow-blue-200"
+  >
+    Products
+  </a>
+
+  <a
+    href="#about"
+    className="rounded-full px-5 py-2.5 text-sm font-bold text-slate-700 transition-all duration-300 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-blue-600 hover:to-indigo-600 hover:text-white hover:shadow-lg hover:shadow-blue-200"
+  >
+    About
+  </a>
+
+</div>
 
     {/* Login, Shop Now and Cart */}
     <div className="flex shrink-0 items-center gap-3">
@@ -657,28 +683,37 @@ const handleLogout = () => {
        </div>
       </div>
 
+    
       {/* Product Sorting Dropdown */}
-      <div className="mt-6 max-w-xs">
-      <label
-       htmlFor="sortProducts"
-       className="mb-2 block font-semibold text-slate-700"
-      >
-       Sort Products:
-      </label>
+     <div className="mt-10 mb-8 max-w-xs">
 
-       <select
-       id="sortProducts"
-       value={sortOption}
-       onChange={(e) => setSortOption(e.target.value)}
-       className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 outline-none focus:border-blue-500"
-      >
+    <label
+    htmlFor="sortProducts"
+    className="mb-3 block text-sm font-bold tracking-wide text-slate-700"
+    >
+    Sort Products
+    </label>
+
+    <div className="relative">
+    <select
+      id="sortProducts"
+      value={sortOption}
+      onChange={(e) => setSortOption(e.target.value)}
+      className="w-full appearance-none rounded-xl border border-blue-100 bg-white/80 px-5 py-3.5 pr-12 text-sm font-semibold text-slate-700 shadow-md shadow-blue-100/40 backdrop-blur-lg outline-none transition-all duration-300 hover:border-blue-300 hover:shadow-lg focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+    >
       <option value="default">Default</option>
       <option value="price-low-high">Price: Low to High</option>
       <option value="price-high-low">Price: High to Low</option>
       <option value="name-a-z">Name: A to Z</option>
       <option value="name-z-a">Name: Z to A</option>
-     </select>
-     </div>  
+    </select>
+
+    <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-blue-600">
+      ▼
+    </span>
+  </div>
+
+</div>
 
           {/* Loading */}
           {loading && (
