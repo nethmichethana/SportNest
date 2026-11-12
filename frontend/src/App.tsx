@@ -906,7 +906,125 @@ const handlePlaceOrder = async (e: React.FormEvent<HTMLFormElement>) => {
 )}
 
 
-      {/* About */}
+
+{/* Login Modal */}
+{showLogin && (
+  <div className="fixed inset-0 z-[110] flex items-center justify-center bg-slate-950/70 px-4 py-6 backdrop-blur-md">
+
+    <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/40 bg-white/90 p-8 shadow-2xl backdrop-blur-xl">
+
+      {/* Decorative Background */}
+      <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-blue-400/20 blur-3xl" />
+      <div className="absolute -bottom-16 -left-16 h-40 w-40 rounded-full bg-indigo-400/20 blur-3xl" />
+
+      <div className="relative">
+
+        {/* Close Button */}
+        <button
+          type="button"
+          onClick={() => setShowLogin(false)}
+          className="absolute -right-3 -top-3 flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-xl font-bold text-slate-600 transition hover:bg-red-100 hover:text-red-600"
+        >
+          ×
+        </button>
+
+        {/* Logo */}
+        <div className="mb-6 text-center">
+          <h2 className="text-3xl font-black tracking-tight text-slate-900">
+            Sport<span className="text-blue-600">Nest.</span>
+          </h2>
+
+          <div className="mx-auto mt-3 h-1 w-14 rounded-full bg-blue-600" />
+
+          <h3 className="mt-6 text-2xl font-black text-slate-900">
+            Welcome Back!
+          </h3>
+
+          <p className="mt-2 text-sm text-slate-500">
+            Sign in to continue your sports journey.
+          </p>
+        </div>
+
+        {/* Login Form */}
+        <form
+          onSubmit={(e) => e.preventDefault()}
+          className="space-y-5"
+        >
+
+          {/* Email */}
+          <div>
+            <label className="mb-2 block text-sm font-bold text-slate-700">
+              Email Address
+            </label>
+
+            <input
+              type="email"
+              required
+              value={loginDetails.email}
+              onChange={(e) =>
+                setLoginDetails({
+                  ...loginDetails,
+                  email: e.target.value,
+                })
+              }
+              placeholder="Enter your email"
+              className="w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3.5 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+            />
+          </div>
+
+          {/* Password */}
+          <div>
+            <label className="mb-2 block text-sm font-bold text-slate-700">
+              Password
+            </label>
+
+            <input
+              type="password"
+              required
+              value={loginDetails.password}
+              onChange={(e) =>
+                setLoginDetails({
+                  ...loginDetails,
+                  password: e.target.value,
+                })
+              }
+              placeholder="Enter your password"
+              className="w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3.5 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+            />
+          </div>
+
+          {/* Login Button */}
+          <button
+            type="submit"
+            className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 py-3.5 font-bold text-white shadow-lg shadow-blue-500/20 transition hover:-translate-y-0.5 hover:shadow-xl"
+          >
+            Login to SportNest
+          </button>
+
+        </form>
+
+        {/* Register Link */}
+        <p className="mt-7 text-center text-sm text-slate-600">
+          Don't have an account?{" "}
+          <button
+            type="button"
+            onClick={() => {
+              setShowLogin(false);
+              setShowRegister(true);
+            }}
+            className="font-bold text-blue-600 hover:text-blue-800"
+          >
+            Create an Account
+          </button>
+        </p>
+
+      </div>
+    </div>
+  </div>
+)}
+
+
+       {/* About */}
       <section id="about" className="mx-auto max-w-7xl px-6 py-20 text-center">
         <p className="font-bold uppercase tracking-widest text-blue-600">About SportNest</p>
         <h2 className="mt-3 text-3xl font-black md:text-4xl">
