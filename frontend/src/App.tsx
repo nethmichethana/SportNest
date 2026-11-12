@@ -36,15 +36,27 @@ function App() {
   const [showCart, setShowCart] = useState<boolean>(false);
   const [showCheckout, setShowCheckout] = useState<boolean>(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [showLogin, setShowLogin] = useState<boolean>(false);
+  const [showRegister, setShowRegister] = useState<boolean>(false);
+  const [loginDetails, setLoginDetails] = useState({
+  email: "",
+  password: "",
+  });
+  const [registerDetails, setRegisterDetails] = useState({
+  name: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+  });
   const [customerDetails, setCustomerDetails] = useState({
   customerName: "",
   email: "",
   phone: "",
   address: "",
-});
- const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
- const [orderMessage, setOrderMessage] = useState<string>("");
- const [orderError, setOrderError] = useState<string>("");
+  });
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [orderMessage, setOrderMessage] = useState<string>("");
+  const [orderError, setOrderError] = useState<string>("");
   
   useEffect(() => {
     const fetchProducts = async () => {
@@ -225,11 +237,18 @@ const handlePlaceOrder = async (e: React.FormEvent<HTMLFormElement>) => {
       <a href="#about" className="font-medium hover:text-blue-600">About</a>
     </div>
 
-    {/* Login, Shop Now and Cart */}
-    <div className="flex shrink-0 items-center gap-3">
-      <a href="#login" className="hidden font-semibold sm:block">
-        Login
-      </a>
+    
+     <button
+     type="button"
+     onClick={() => {
+     setShowLogin(true);
+     setShowRegister(false);
+     }}
+     className="rounded-lg border border-blue-200 bg-white/70 px-5 py-2.5 font-semibold text-blue-700 shadow-sm backdrop-blur-md transition hover:border-blue-500 hover:bg-blue-50 hover:shadow-md"
+     >
+     Login
+     </button>
+
 
       <a
         href="#products"
