@@ -1024,6 +1024,169 @@ const handlePlaceOrder = async (e: React.FormEvent<HTMLFormElement>) => {
 )}
 
 
+
+{/* Registration Modal */}
+{showRegister && (
+  <div className="fixed inset-0 z-[110] flex items-center justify-center bg-slate-950/70 px-4 py-6 backdrop-blur-md">
+
+    <div className="relative max-h-[90vh] w-full max-w-md overflow-y-auto rounded-3xl border border-white/40 bg-white/90 p-8 shadow-2xl backdrop-blur-xl">
+
+      {/* Decorative Background */}
+      <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-blue-400/20 blur-3xl" />
+      <div className="absolute -bottom-16 -left-16 h-40 w-40 rounded-full bg-indigo-400/20 blur-3xl" />
+
+      <div className="relative">
+
+        {/* Close Button */}
+        <button
+          type="button"
+          onClick={() => setShowRegister(false)}
+          className="absolute -right-3 -top-3 flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-xl font-bold text-slate-600 transition hover:bg-red-100 hover:text-red-600"
+        >
+          ×
+        </button>
+
+        {/* Logo and Heading */}
+        <div className="mb-6 text-center">
+          <h2 className="text-3xl font-black tracking-tight text-slate-900">
+            Sport<span className="text-blue-600">Nest.</span>
+          </h2>
+
+          <div className="mx-auto mt-3 h-1 w-14 rounded-full bg-blue-600" />
+
+          <h3 className="mt-6 text-2xl font-black text-slate-900">
+            Create Account
+          </h3>
+
+          <p className="mt-2 text-sm text-slate-500">
+            Join SportNest and start your sports journey.
+          </p>
+        </div>
+
+        {/* Registration Form */}
+        <form
+          onSubmit={(e) => e.preventDefault()}
+          className="space-y-4"
+        >
+
+          {/* Full Name */}
+          <div>
+            <label className="mb-2 block text-sm font-bold text-slate-700">
+              Full Name
+            </label>
+
+            <input
+              type="text"
+              required
+              value={registerDetails.name}
+              onChange={(e) =>
+                setRegisterDetails({
+                  ...registerDetails,
+                  name: e.target.value,
+                })
+              }
+              placeholder="Enter your full name"
+              className="w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+            />
+          </div>
+
+          {/* Email */}
+          <div>
+            <label className="mb-2 block text-sm font-bold text-slate-700">
+              Email Address
+            </label>
+
+            <input
+              type="email"
+              required
+              value={registerDetails.email}
+              onChange={(e) =>
+                setRegisterDetails({
+                  ...registerDetails,
+                  email: e.target.value,
+                })
+              }
+              placeholder="Enter your email"
+              className="w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+            />
+          </div>
+
+          {/* Password */}
+          <div>
+            <label className="mb-2 block text-sm font-bold text-slate-700">
+              Password
+            </label>
+
+            <input
+              type="password"
+              required
+              minLength={6}
+              value={registerDetails.password}
+              onChange={(e) =>
+                setRegisterDetails({
+                  ...registerDetails,
+                  password: e.target.value,
+                })
+              }
+              placeholder="Create a password"
+              className="w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+            />
+          </div>
+
+          {/* Confirm Password */}
+          <div>
+            <label className="mb-2 block text-sm font-bold text-slate-700">
+              Confirm Password
+            </label>
+
+            <input
+              type="password"
+              required
+              minLength={6}
+              value={registerDetails.confirmPassword}
+              onChange={(e) =>
+                setRegisterDetails({
+                  ...registerDetails,
+                  confirmPassword: e.target.value,
+                })
+              }
+              placeholder="Confirm your password"
+              className="w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+            />
+          </div>
+
+          {/* Create Account Button */}
+          <button
+            type="submit"
+            className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 py-3.5 font-bold text-white shadow-lg shadow-blue-500/20 transition hover:-translate-y-0.5 hover:shadow-xl"
+          >
+            Create Account
+          </button>
+
+        </form>
+
+        {/* Login Link */}
+        <p className="mt-6 text-center text-sm text-slate-600">
+          Already have an account?{" "}
+          <button
+            type="button"
+            onClick={() => {
+              setShowRegister(false);
+              setShowLogin(true);
+            }}
+            className="font-bold text-blue-600 hover:text-blue-800"
+          >
+            Login
+          </button>
+        </p>
+
+      </div>
+    </div>
+  </div>
+)}
+
+
+
        {/* About */}
       <section id="about" className="mx-auto max-w-7xl px-6 py-20 text-center">
         <p className="font-bold uppercase tracking-widest text-blue-600">About SportNest</p>
