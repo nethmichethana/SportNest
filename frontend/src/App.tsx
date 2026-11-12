@@ -41,6 +41,9 @@ function App() {
   const [isRegistering, setIsRegistering] = useState<boolean>(false);
   const [registerMessage, setRegisterMessage] = useState<string>("");
   const [registerError, setRegisterError] = useState<string>("");
+  const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
+  const [loginMessage, setLoginMessage] = useState<string>("");
+  const [loginError, setLoginError] = useState<string>("");
   const [loginDetails, setLoginDetails] = useState({
   email: "",
   password: "",
@@ -269,6 +272,47 @@ const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     setRegisterError(message || "Registration failed. Please try again.");
   } finally {
     setIsRegistering(false);
+  }
+};
+
+
+const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+
+  setLoginMessage("");
+  setLoginError("");
+
+  try {
+    setIsLoggingIn(true);
+
+    const response = await API.post("/auth/login", loginDetails);
+
+    const { token, name, email, role } = response.data.data;
+
+    // Save login information
+    localStorage.setItem("token", token);
+    localStorage.setItem(
+      "user",
+      JSON.stringify({ name, email, role })
+    );
+
+    setLoginMessage("Login successful! Welcome to SportNest.");
+
+    setLoginDetails({
+      email: "",
+      password: "",
+    });
+
+    setShowLogin(false);
+
+  } catch (error) {
+    const message = (
+      error as { response?: { data?: { message?: string } } }
+    ).response?.data?.message;
+
+    setLoginError(message || "Login failed. Please try again.");
+  } finally {
+    setIsLoggingIn(false);
   }
 };
 
