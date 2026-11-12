@@ -44,6 +44,14 @@ function App() {
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
   const [loginMessage, setLoginMessage] = useState<string>("");
   const [loginError, setLoginError] = useState<string>("");
+  const [loggedInUser, setLoggedInUser] = useState<{
+  name: string;
+  email: string;
+  role: string;
+} | null>(() => {
+  const savedUser = localStorage.getItem("user");
+  return savedUser ? JSON.parse(savedUser) : null;
+});
   const [loginDetails, setLoginDetails] = useState({
   email: "",
   password: "",
@@ -295,6 +303,12 @@ const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
       JSON.stringify({ name, email, role })
     );
 
+    setLoggedInUser({
+    name,
+    email,
+    role,
+    });
+
     setLoginMessage("Login successful! Welcome to SportNest.");
 
     setLoginDetails({
@@ -313,6 +327,13 @@ const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
   } finally {
     setIsLoggingIn(false);
   }
+};
+
+const handleLogout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+
+  setLoggedInUser(null);
 };
 
   return (
@@ -337,17 +358,32 @@ const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
 
     {/* Login, Shop Now and Cart */}
     <div className="flex shrink-0 items-center gap-3">
-      <button
-       type="button"
-       onClick={() => {
-       setShowLogin(true);
-       setShowRegister(false);
-       }}
-       className="rounded-lg border border-blue-200 bg-white/70 px-5 py-2.5 font-semibold text-blue-700 shadow-sm backdrop-blur-md transition hover:border-blue-500 hover:bg-blue-50 hover:shadow-md"
-       >
-      Login
-      </button>
+      {loggedInUser ? (
+  <div className="flex items-center gap-3">
+    <span className="font-semibold text-blue-800">
+      Hi, {loggedInUser.name}
+    </span>
 
+    <button
+      type="button"
+      onClick={handleLogout}
+      className="rounded-lg bg-red-500 px-5 py-2.5 font-semibold text-white shadow-md transition hover:bg-red-600 hover:shadow-lg"
+    >
+      Logout
+    </button>
+  </div>
+   ) : (
+  <button
+    type="button"
+    onClick={() => {
+      setShowLogin(true);
+      setShowRegister(false);
+    }}
+    className="rounded-lg border border-blue-200 bg-white/70 px-5 py-2.5 font-semibold text-blue-700 shadow-sm backdrop-blur-md transition hover:border-blue-500 hover:bg-blue-50 hover:shadow-md"
+  >
+    Login
+  </button>
+)}
 
       <a
         href="#products"
