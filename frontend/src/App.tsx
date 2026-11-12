@@ -289,7 +289,6 @@ const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
 
     const { token, name, email, role } = response.data.data;
 
-    // Save login information
     localStorage.setItem("token", token);
     localStorage.setItem(
       "user",
@@ -1045,10 +1044,7 @@ const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         </div>
 
         {/* Login Form */}
-        <form
-          onSubmit={(e) => e.preventDefault()}
-          className="space-y-5"
-        >
+        <form onSubmit={handleLogin}>
 
           {/* Email */}
           <div>
@@ -1092,13 +1088,22 @@ const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
             />
           </div>
 
+          {loginMessage && (
+          <p className="text-green-600 text-sm">{loginMessage}</p>
+           )}
+
+          {loginError && (
+          <p className="text-red-600 text-sm">{loginError}</p>
+          )}
+
           {/* Login Button */}
-          <button
-            type="submit"
-            className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 py-3.5 font-bold text-white shadow-lg shadow-blue-500/20 transition hover:-translate-y-0.5 hover:shadow-xl"
-          >
-            Login to SportNest
-          </button>
+           <button
+           type="submit"
+           disabled={isLoggingIn}
+           className="mt-5 w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3.5 font-bold text-white shadow-lg shadow-blue-200 transition duration-300 hover:-translate-y-0.5 hover:from-blue-700 hover:to-indigo-700 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
+           >
+           {isLoggingIn ? "Logging In..." : "Login to SportNest"}
+           </button>
 
         </form>
 
@@ -1130,7 +1135,7 @@ const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
 
     <div className="relative max-h-[90vh] w-full max-w-md overflow-y-auto rounded-3xl border border-white/40 bg-white/90 p-8 shadow-2xl backdrop-blur-xl">
 
-      {/* Decorative Background */}
+
       <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-blue-400/20 blur-3xl" />
       <div className="absolute -bottom-16 -left-16 h-40 w-40 rounded-full bg-indigo-400/20 blur-3xl" />
 
