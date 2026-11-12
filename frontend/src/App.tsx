@@ -38,6 +38,9 @@ function App() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [showLogin, setShowLogin] = useState<boolean>(false);
   const [showRegister, setShowRegister] = useState<boolean>(false);
+  const [isRegistering, setIsRegistering] = useState<boolean>(false);
+  const [registerMessage, setRegisterMessage] = useState<string>("");
+  const [registerError, setRegisterError] = useState<string>("");
   const [loginDetails, setLoginDetails] = useState({
   email: "",
   password: "",
@@ -214,6 +217,58 @@ const handlePlaceOrder = async (e: React.FormEvent<HTMLFormElement>) => {
     setOrderError(message || "Failed to place order. Please try again.");
   } finally {
     setIsSubmitting(false);
+  }
+};
+
+const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+
+  setRegisterMessage("");
+  setRegisterError("");
+
+  if (registerDetails.password !== registerDetails.confirmPassword) {
+    setRegisterError("Passwords do not match.");
+    return;
+  }
+
+  if (registerDetails.password.length < 6) {
+    setRegisterError("Password must contain at least 6 characters.");
+    return;
+  }
+
+  try {
+    setIsRegistering(true);
+
+    const response = await API.post("/auth/register", {
+      name: registerDetails.name,
+      email: registerDetails.email,
+      password: registerDetails.password,
+    });
+
+    setRegisterMessage(response.data.message);
+
+    setRegisterDetails({
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    });
+
+    setShowRegister(false);
+    setShowLogin(true);
+    setLoginDetails({
+      email: registerDetails.email,
+      password: "",
+    });
+
+  } catch (error) {
+    const message = (
+      error as { response?: { data?: { message?: string } } }
+    ).response?.data?.message;
+
+    setRegisterError(message || "Registration failed. Please try again.");
+  } finally {
+    setIsRegistering(false);
   }
 };
 
