@@ -1119,10 +1119,7 @@ const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
         </div>
 
         {/* Registration Form */}
-        <form
-          onSubmit={(e) => e.preventDefault()}
-          className="space-y-4"
-        >
+        <form onSubmit={handleRegister}>
 
           {/* Full Name */}
           <div>
@@ -1210,14 +1207,21 @@ const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
             />
           </div>
 
-          {/* Create Account Button */}
-          <button
-            type="submit"
-            className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 py-3.5 font-bold text-white shadow-lg shadow-blue-500/20 transition hover:-translate-y-0.5 hover:shadow-xl"
-          >
-            Create Account
-          </button>
+          {registerMessage && (
+          <p className="text-green-600 text-sm">{registerMessage}</p>
+           )}
 
+          {registerError && (
+          <p className="text-red-600 text-sm">{registerError}</p>
+           )}
+
+          <button
+          type="submit"
+          disabled={isRegistering}
+          className="mt-5 w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3.5 font-bold text-white shadow-lg shadow-blue-200 transition duration-300 hover:-translate-y-0.5 hover:from-blue-700 hover:to-indigo-700 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
+           >
+          {isRegistering ? "Creating Account..." : "Create Account"}
+          </button>
         </form>
 
         {/* Login Link */}
