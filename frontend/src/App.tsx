@@ -78,6 +78,8 @@ const [productForm, setProductForm] = useState<ProductInput>({
 const [productFormError, setProductFormError] = useState<string>("");
 const [productFormSuccess, setProductFormSuccess] = useState<string>("");
 const [isSavingProduct, setIsSavingProduct] = useState<boolean>(false);
+const [editingProductId, setEditingProductId] = useState<string | null>(null);
+
 
   const [loggedInUser, setLoggedInUser] = useState<{
   name: string;
@@ -533,7 +535,10 @@ const handleShowAdminDashboard = async () => {
 };
 
 
-const handleCreateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
+
+const handleCreateProduct = async (
+  e: React.FormEvent<HTMLFormElement>
+) => {
   e.preventDefault();
 
   setProductFormError("");
@@ -553,12 +558,16 @@ const handleCreateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
   setIsSavingProduct(true);
 
   try {
-    await createProduct(productForm);
+    if (editingProductId) {
+      await updateProduct(editingProductId, productForm);
+      setProductFormSuccess("Product updated successfully!");
+    } else {
+      await createProduct(productForm);
+      setProductFormSuccess("Product added successfully!");
+    }
 
     const updatedProducts = await getAllProducts();
     setProducts(updatedProducts);
-
-    setProductFormSuccess("Product added successfully!");
 
     setProductForm({
       name: "",
@@ -570,7 +579,9 @@ const handleCreateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
       isActive: true,
     });
 
+    setEditingProductId(null);
     setShowProductForm(false);
+
   } catch (error) {
     const message = (
       error as {
@@ -578,7 +589,7 @@ const handleCreateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
       }
     ).response?.data?.message;
 
-    setProductFormError(message || "Failed to add product.");
+    setProductFormError(message || "Failed to save product.");
   } finally {
     setIsSavingProduct(false);
   }
@@ -774,6 +785,7 @@ const handleCreateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
            setProductFormError("");
            setProductFormSuccess("");
            setShowProductForm(true);
+           setEditingProductId(null);
           }}
           className="mt-5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-3 font-bold text-white shadow-lg transition hover:scale-105"
            >
@@ -787,7 +799,7 @@ const handleCreateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
   <div className="mb-8 rounded-2xl border border-blue-100 bg-gradient-to-br from-white to-blue-50 p-6 shadow-lg">
 
     <h3 className="mb-5 text-xl font-black text-slate-800">
-      Add New Product
+       {editingProductId ? "Edit Product" : "Add New Product"}
     </h3>
 
     <form onSubmit={handleCreateProduct} className="space-y-4">
@@ -932,7 +944,9 @@ const handleCreateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
           disabled={isSavingProduct}
           className="rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3 font-bold text-white shadow-lg hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50"
         >
-          {isSavingProduct ? "Saving..." : "Save Product"}
+         {isSavingProduct
+             ? "Saving..." : editingProductId
+             ? "Update Product": "Save Product"}
         </button>
 
       </div>
@@ -1003,6 +1017,7 @@ const handleCreateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
              onClick={() => {
              setProductFormError("");
              setProductFormSuccess("");
+             setEditingProductId(product._id);
              setProductForm({
              name: product.name,
              description: product.description,
