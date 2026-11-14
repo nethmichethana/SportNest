@@ -53,6 +53,8 @@ function App() {
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmNewPassword, setConfirmNewPassword] = useState<string>("");
   const [resetToken, setResetToken] = useState<string>("");
+  const [adminProductSearch, setAdminProductSearch] = useState<string>("");
+  const [adminProductCategory, setAdminProductCategory] = useState<string>("All");
   const [isRegistering, setIsRegistering] = useState<boolean>(false);
   const [registerMessage, setRegisterMessage] = useState<string>("");
   const [registerError, setRegisterError] = useState<string>("");
@@ -62,10 +64,10 @@ function App() {
   const [myOrders, setMyOrders] = useState<Order[]>([]);
   const [ordersLoading, setOrdersLoading] = useState<boolean>(false);
   const [ordersError, setOrdersError] = useState<string>("");
+  const [showProductForm, setShowProductForm] = useState<boolean>(false);
 
-const [showProductForm, setShowProductForm] = useState<boolean>(false);
 
-const [productForm, setProductForm] = useState<ProductInput>({
+ const [productForm, setProductForm] = useState<ProductInput>({
   name: "",
   description: "",
   price: 0,
@@ -597,7 +599,21 @@ const handleCreateProduct = async (
 
 
 
-  return (
+const filteredAdminProducts = products.filter((product) => {
+  const search = adminProductSearch.trim().toLowerCase();
+
+  const matchesSearch =
+    product.name.toLowerCase().includes(search);
+
+  const matchesCategory =
+    adminProductCategory === "All" ||
+    product.category === adminProductCategory;
+
+  return matchesSearch && matchesCategory;
+});
+
+
+return (
     <div className="min-h-screen bg-white text-slate-900">
       {/* Navigation */}
       
@@ -960,11 +976,13 @@ const handleCreateProduct = async (
 {/* Product Management Section */}
 <div className="mb-10">
 
+  {/* Section Header */}
   <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
     <div>
       <h3 className="text-xl font-black text-slate-800">
         Product Management
       </h3>
+
       <p className="mt-1 text-sm text-slate-500">
         Manage all SportNest products
       </p>
@@ -975,31 +993,67 @@ const handleCreateProduct = async (
     </span>
   </div>
 
-  {products.length === 0 ? (
+  {/* Search and Category Filter */}
+  <div className="mb-6 grid grid-cols-1 gap-3 md:grid-cols-2">
+
+    <input
+      type="text"
+      value={adminProductSearch}
+      onChange={(e) => setAdminProductSearch(e.target.value)}
+      placeholder="Search products by name..."
+      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+    />
+
+    <select
+      value={adminProductCategory}
+      onChange={(e) => setAdminProductCategory(e.target.value)}
+      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-blue-500"
+    >
+      <option value="All">All Categories</option>
+      <option value="Football">Football</option>
+      <option value="Cricket">Cricket</option>
+      <option value="Fitness">Fitness</option>
+      <option value="Basketball">Basketball</option>
+    </select>
+
+  </div>
+
+  {/* Product List */}
+  {filteredAdminProducts.length === 0 ? (
+
     <p className="rounded-xl bg-slate-50 p-8 text-center text-slate-500">
-      No products available.
+      {products.length === 0
+        ? "No products available."
+        : "No matching products found."}
     </p>
+
   ) : (
+
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
 
-      {products.map((product) => (
+      {filteredAdminProducts.map((product) => (
+
         <div
           key={product._id}
           className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:shadow-lg"
         >
 
-        <img
-          src={
-            product.imageUrl.startsWith("http")
-           ? product.imageUrl: product.imageUrl.startsWith("/")
-           ? product.imageUrl: `/images/${product.imageUrl}`
-          }
-          alt={product.name}
-          className="h-40 w-full rounded-t-2xl bg-slate-100 object-contain p-3"
+          {/* Product Image */}
+          <img
+            src={
+              product.imageUrl.startsWith("http")
+                ? product.imageUrl
+                : product.imageUrl.startsWith("/")
+                  ? product.imageUrl
+                  : `/images/${product.imageUrl}`
+            }
+            alt={product.name}
+            className="h-40 w-full rounded-t-2xl bg-slate-100 object-contain p-3"
           />
 
-
+          {/* Product Details */}
           <div className="p-4">
+
             <p className="text-xs font-bold uppercase tracking-wider text-blue-600">
               {product.category}
             </p>
@@ -1015,66 +1069,79 @@ const handleCreateProduct = async (
             <p className="mt-1 text-sm text-slate-500">
               Stock: {product.stockQuantity}
             </p>
-            
-            
-          <div className="mt-4 flex gap-2">
-            <button
-             type="button"
-             onClick={() => {
-             setProductFormError("");
-             setProductFormSuccess("");
-             setEditingProductId(product._id);
-             setProductForm({
-             name: product.name,
-             description: product.description,
-             price: product.price,
-             category: product.category,
-             stockQuantity: product.stockQuantity,
-             imageUrl: product.imageUrl,
-             isActive: product.isActive,
-            });
-             setShowProductForm(true);
-            }}
-            className="flex-1 rounded-lg bg-blue-600 px-3 py-2 text-sm font-bold text-white hover:bg-blue-700"
-           >
-           Edit
-          </button>
 
-          <button
-          type="button"
-          onClick={async () => {
-          if (!window.confirm(`Delete ${product.name}?`)) return;
-
-         try {
-          await deleteProduct(product._id);
-          setProducts((previousProducts) =>
-           previousProducts.filter((item) => item._id !== product._id)
-          );
-        } catch (error) {
-          alert("Failed to delete product.");
-        }
-       }}
-        className="flex-1 rounded-lg bg-red-500 px-3 py-2 text-sm font-bold text-white hover:bg-red-600"
-        >
-         Delete
-       </button>
-       </div>
-
-
-            <span className={`mt-3 inline-block rounded-full px-3 py-1 text-xs font-bold ${
-              product.isActive
-                ? "bg-green-100 text-green-700"
-                : "bg-red-100 text-red-700"
-            }`}>
+            {/* Active / Inactive Status */}
+            <span
+              className={`mt-3 inline-block rounded-full px-3 py-1 text-xs font-bold ${
+                product.isActive
+                  ? "bg-green-100 text-green-700"
+                  : "bg-red-100 text-red-700"
+              }`}
+            >
               {product.isActive ? "Active" : "Inactive"}
             </span>
+
+            {/* Edit and Delete Buttons */}
+            <div className="mt-4 flex gap-2">
+
+              <button
+                type="button"
+                onClick={() => {
+                  setProductFormError("");
+                  setProductFormSuccess("");
+                  setEditingProductId(product._id);
+
+                  setProductForm({
+                    name: product.name,
+                    description: product.description,
+                    price: product.price,
+                    category: product.category,
+                    stockQuantity: product.stockQuantity,
+                    imageUrl: product.imageUrl,
+                    isActive: product.isActive,
+                  });
+
+                  setShowProductForm(true);
+                }}
+                className="flex-1 rounded-lg bg-blue-600 px-3 py-2 text-sm font-bold text-white hover:bg-blue-700"
+              >
+                Edit
+              </button>
+
+              <button
+                type="button"
+                onClick={async () => {
+                  if (!window.confirm(`Delete ${product.name}?`)) return;
+
+                  try {
+                    await deleteProduct(product._id);
+
+                    setProducts((previousProducts) =>
+                      previousProducts.filter(
+                        (item) => item._id !== product._id
+                      )
+                    );
+
+                  } catch (error) {
+                    alert("Failed to delete product.");
+                  }
+                }}
+                className="flex-1 rounded-lg bg-red-500 px-3 py-2 text-sm font-bold text-white hover:bg-red-600"
+              >
+                Delete
+              </button>
+
+            </div>
+
           </div>
         </div>
       ))}
 
     </div>
   )}
+
 </div>
+
 
  
 
