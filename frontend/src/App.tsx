@@ -1,9 +1,10 @@
 
 import { useEffect, useState } from "react";
 import type { Product } from "./types/Product";
-import { getAllProducts } from "./services/productService";
+import { getAllProducts,createProduct,updateProduct,deleteProduct, } from "./services/productService";
 import API from "./services/api";
 import type { Order } from "./types/Order";
+import type { ProductInput } from "./services/productService";
 import { getMyOrders, getAllOrders, updateOrderStatus, } from "./services/orderService";
 
 const categories = [
@@ -61,6 +62,23 @@ function App() {
   const [myOrders, setMyOrders] = useState<Order[]>([]);
   const [ordersLoading, setOrdersLoading] = useState<boolean>(false);
   const [ordersError, setOrdersError] = useState<string>("");
+
+const [showProductForm, setShowProductForm] = useState<boolean>(false);
+
+const [productForm, setProductForm] = useState<ProductInput>({
+  name: "",
+  description: "",
+  price: 0,
+  category: "Football",
+  stockQuantity: 0,
+  imageUrl: "",
+  isActive: true,
+});
+
+const [productFormError, setProductFormError] = useState<string>("");
+const [productFormSuccess, setProductFormSuccess] = useState<string>("");
+const [isSavingProduct, setIsSavingProduct] = useState<boolean>(false);
+
   const [loggedInUser, setLoggedInUser] = useState<{
   name: string;
   email: string;
@@ -694,6 +712,22 @@ const handleShowAdminDashboard = async () => {
             </div>
 
           </div>
+
+
+          <div className="mb-6 flex justify-end">
+           <button
+           type="button"
+           onClick={() => {
+           setProductFormError("");
+           setProductFormSuccess("");
+           setShowProductForm(true);
+          }}
+          className="rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-3 font-bold text-white shadow-lg transition hover:scale-105"
+           >
+          + Add New Product
+         </button>
+         </div>
+ 
 
           <h3 className="mb-4 mt-8 text-xl font-bold text-slate-800">
             All Customer Orders
