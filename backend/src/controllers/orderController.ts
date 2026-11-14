@@ -154,3 +154,66 @@ export const getAllOrders = async (
     });
   }
 };
+
+
+
+export const updateOrderStatus = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const allowedStatuses = [
+      "Pending",
+      "Processing",
+      "Shipped",
+      "Delivered",
+      "Cancelled",
+    ];
+
+    if (!allowedStatuses.includes(status)) {
+      res.status(400).json({
+        success: false,
+        message: "Invalid order status.",
+      });
+      return;
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      res.status(400).json({
+        success: false,
+        message: "Invalid order ID.",
+      });
+      return;
+    }
+
+    const order = await Order.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true, runValidators: true }
+    );
+
+    if (!order) {
+      res.status(404).json({
+        success: false,
+        message: "Order not found.",
+      });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Order status updated successfully.",
+      data: order,
+    });
+  } catch (error) {
+    console.error("Update Order Status Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to update order status.",
+    });
+  }
+};
