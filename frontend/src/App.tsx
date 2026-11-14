@@ -637,20 +637,29 @@ const handleResetPassword = async (
           className="mt-5 w-full rounded-lg border border-red-500 py-3 font-semibold text-red-500 transition hover:bg-red-500 hover:text-white"
           >
            Clear Cart
-           </button>
+          </button>
 
-           {/* Checkout Button */}
-           <button
-           type="button"
-           onClick={() => {
-           setShowCart(false);
-           setShowCheckout(true);
-           console.log("Checkout opened:", true);
-           }}
-          className="mt-3 w-full rounded-lg bg-blue-600 py-3 font-semibold text-white transition hover:bg-blue-700"
-           >
-          Proceed to Checkout
-         </button>
+ 
+         {/* Checkout Button */}
+        <button
+         type="button"
+        onClick={() => {
+        if (!loggedInUser) {
+          setShowCart(false);
+          setShowLogin(true);
+          setLoginMessage("");
+          setLoginError("");
+          return;
+       }
+
+       setShowCart(false);
+       setShowCheckout(true);
+      }}
+      className="mt-3 w-full rounded-lg bg-blue-600 py-3 font-semibold text-white transition hover:bg-blue-700"
+      >
+      Proceed to Checkout
+     </button>
+
         </>
       )}
     </div>
