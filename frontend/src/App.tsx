@@ -987,11 +987,17 @@ const handleCreateProduct = async (
           key={product._id}
           className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:shadow-lg"
         >
-          <img
-            src={product.imageUrl}
-            alt={product.name}
-            className="h-40 w-full bg-slate-100 object-contain p-3"
+
+        <img
+          src={
+            product.imageUrl.startsWith("http")
+           ? product.imageUrl: product.imageUrl.startsWith("/")
+           ? product.imageUrl: `/images/${product.imageUrl}`
+          }
+          alt={product.name}
+          className="h-40 w-full rounded-t-2xl bg-slate-100 object-contain p-3"
           />
+
 
           <div className="p-4">
             <p className="text-xs font-bold uppercase tracking-wider text-blue-600">
