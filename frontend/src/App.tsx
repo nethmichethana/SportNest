@@ -38,6 +38,11 @@ function App() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [showLogin, setShowLogin] = useState<boolean>(false);
   const [showRegister, setShowRegister] = useState<boolean>(false);
+  const [showForgotPassword, setShowForgotPassword] = useState<boolean>(false);
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState<string>("");
+  const [isSendingResetEmail, setIsSendingResetEmail] = useState<boolean>(false);
+  const [forgotPasswordMessage, setForgotPasswordMessage] = useState<string>("");
+  const [forgotPasswordError, setForgotPasswordError] = useState<string>("");
   const [isRegistering, setIsRegistering] = useState<boolean>(false);
   const [registerMessage, setRegisterMessage] = useState<string>("");
   const [registerError, setRegisterError] = useState<string>("");
@@ -334,6 +339,41 @@ const handleLogout = () => {
   localStorage.removeItem("user");
 
   setLoggedInUser(null);
+};
+
+const handleForgotPassword = async (
+  e: React.FormEvent<HTMLFormElement>
+) => {
+  e.preventDefault();
+
+  setForgotPasswordMessage("");
+  setForgotPasswordError("");
+
+  if (!forgotPasswordEmail.trim()) {
+    setForgotPasswordError("Please enter your email address.");
+    return;
+  }
+
+  try {
+    setIsSendingResetEmail(true);
+
+    const response = await API.post("/auth/forgot-password", {
+      email: forgotPasswordEmail.trim(),
+    });
+
+    setForgotPasswordMessage(response.data.message);
+
+  } catch (error) {
+    const message = (
+      error as { response?: { data?: { message?: string } } }
+    ).response?.data?.message;
+
+    setForgotPasswordError(
+      message || "Unable to send reset email. Please try again."
+    );
+  } finally {
+    setIsSendingResetEmail(false);
+  }
 };
 
   return (
@@ -1159,6 +1199,23 @@ const handleLogout = () => {
             />
           </div>
 
+
+          {/* Forgot Password Link */}
+          <div className="mt-2 flex justify-end">
+           <button
+            type="button"
+            onClick={() => {
+            setShowLogin(false);
+            setShowForgotPassword(true);
+            setForgotPasswordMessage("");
+            setForgotPasswordError("");
+            }}
+            className="text-sm font-semibold text-blue-600 transition hover:text-indigo-700 hover:underline"
+             >
+            Forgot Password?
+           </button>
+          </div>
+
           {loginMessage && (
           <p className="text-green-600 text-sm">{loginMessage}</p>
            )}
@@ -1194,6 +1251,102 @@ const handleLogout = () => {
         </p>
 
       </div>
+    </div>
+  </div>
+)}
+
+
+{/* Forgot Password Modal */}
+{showForgotPassword && (
+  <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/50 px-4 py-6 backdrop-blur-md">
+
+    <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/50 bg-white/85 p-8 shadow-2xl shadow-blue-950/20 backdrop-blur-2xl">
+
+      {/* Close Button */}
+      <button
+        type="button"
+        onClick={() => setShowForgotPassword(false)}
+        className="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-red-50 hover:text-red-500"
+      >
+        ✕
+      </button>
+
+      {/* Icon */}
+      <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-3xl text-white shadow-lg shadow-blue-200">
+        🔐
+      </div>
+
+      {/* Heading */}
+      <div className="mb-7 text-center">
+        <h2 className="mb-2 text-2xl font-extrabold tracking-tight text-slate-800">
+          Forgot Password?
+        </h2>
+
+        <p className="text-sm leading-6 text-slate-500">
+          Don't worry! Enter your registered email address
+          and we'll send you a password reset link.
+        </p>
+      </div>
+
+      {/* Form */}
+      <form onSubmit={handleForgotPassword} className="space-y-5">
+
+        <div>
+          <label className="mb-2 block text-sm font-bold text-slate-700">
+            Email Address
+          </label>
+
+          <input
+            type="email"
+            required
+            value={forgotPasswordEmail}
+            onChange={(e) => setForgotPasswordEmail(e.target.value)}
+            placeholder="Enter your registered email"
+            className="w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3.5 text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+          />
+        </div>
+
+        {/* Success Message */}
+        {forgotPasswordMessage && (
+          <p className="rounded-xl border border-green-200 bg-green-50 p-3 text-sm text-green-700">
+            {forgotPasswordMessage}
+          </p>
+        )}
+
+        {/* Error Message */}
+        {forgotPasswordError && (
+          <p className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-600">
+            {forgotPasswordError}
+          </p>
+        )}
+
+        {/* Send Reset Link Button */}
+        <button
+          type="submit"
+          disabled={isSendingResetEmail}
+          className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3.5 font-bold text-white shadow-lg shadow-blue-200 transition duration-300 hover:-translate-y-0.5 hover:from-blue-700 hover:to-indigo-700 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {isSendingResetEmail
+            ? "Sending Reset Link..."
+            : "Send Reset Link"}
+        </button>
+
+      </form>
+
+      {/* Back to Login */}
+      <div className="mt-6 text-center">
+        <button
+          type="button"
+          onClick={() => {
+            setShowForgotPassword(false);
+            setShowLogin(true);
+          }}
+          className="text-sm font-bold text-blue-600 transition hover:text-indigo-700 hover:underline"
+        >
+          ← Back to Login
+        </button>
+      </div>
+
     </div>
   </div>
 )}
