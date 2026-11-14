@@ -162,8 +162,17 @@ export const updateOrderStatus = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { id } = req.params;
-    const { status } = req.body;
+    const id = req.params.id;
+
+    if (typeof id !== "string") {
+    res.status(400).json({
+    success: false,
+    message: "Invalid order ID.",
+    });
+  return;
+}
+
+const { status } = req.body;
 
     const allowedStatuses = [
       "Pending",

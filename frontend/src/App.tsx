@@ -38,6 +38,7 @@ function App() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [showLogin, setShowLogin] = useState<boolean>(false);
   const [showRegister, setShowRegister] = useState<boolean>(false);
+  const [showMyOrders, setShowMyOrders] = useState<boolean>(false);
   const [showForgotPassword, setShowForgotPassword] = useState<boolean>(false);
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState<string>("");
   const [isSendingResetEmail, setIsSendingResetEmail] = useState<boolean>(false);
