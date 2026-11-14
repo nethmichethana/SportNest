@@ -4,7 +4,7 @@ import type { Product } from "./types/Product";
 import { getAllProducts } from "./services/productService";
 import API from "./services/api";
 import type { Order } from "./types/Order";
-import { getMyOrders, getAllOrders, } from "./services/orderService";
+import { getMyOrders, getAllOrders, updateOrderStatus, } from "./services/orderService";
 
 const categories = [
   { name: "Football", icon: "⚽", count: "120+ Products" },
@@ -723,9 +723,47 @@ const handleShowAdminDashboard = async () => {
                       </p>
                     </div>
 
-                    <span className="h-fit rounded-full bg-blue-100 px-4 py-2 text-sm font-bold text-blue-700">
-                      {order.status}
-                    </span>
+
+            <div className="flex flex-wrap items-center gap-2">
+            <span className="rounded-full bg-blue-100 px-3 py-2 text-sm font-bold text-blue-700">
+            {order.status}
+            </span>
+
+            <select
+             value={order.status}
+             onChange={async (e) => {
+             const newStatus = e.target.value as Order["status"];
+
+            try {
+            const updatedOrder = await updateOrderStatus(
+             order._id,
+             newStatus
+            );
+
+            setAllOrders((previousOrders) =>
+            previousOrders.map((item) =>
+            item._id === order._id ? updatedOrder : item
+           )
+          );
+         } catch (error) {
+           alert(
+            (error as {
+              response?: { data?: { message?: string } };
+            }).response?.data?.message ||
+            "Failed to update order status."
+           );
+         }
+        }}
+        className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 outline-none focus:border-blue-500"
+       >
+        <option value="Pending">Pending</option>
+        <option value="Processing">Processing</option>
+        <option value="Shipped">Shipped</option>
+        <option value="Delivered">Delivered</option>
+        <option value="Cancelled">Cancelled</option>
+       </select>
+       </div>
+
                   </div>
 
                   <div className="mt-4 flex flex-wrap justify-between gap-3 border-t border-slate-100 pt-4">
