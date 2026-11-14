@@ -533,6 +533,59 @@ const handleShowAdminDashboard = async () => {
 };
 
 
+const handleCreateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+
+  setProductFormError("");
+  setProductFormSuccess("");
+
+  if (
+    !productForm.name.trim() ||
+    !productForm.description.trim() ||
+    !productForm.imageUrl.trim() ||
+    productForm.price <= 0 ||
+    productForm.stockQuantity < 0
+  ) {
+    setProductFormError("Please enter valid product details.");
+    return;
+  }
+
+  setIsSavingProduct(true);
+
+  try {
+    await createProduct(productForm);
+
+    const updatedProducts = await getAllProducts();
+    setProducts(updatedProducts);
+
+    setProductFormSuccess("Product added successfully!");
+
+    setProductForm({
+      name: "",
+      description: "",
+      price: 0,
+      category: "Football",
+      stockQuantity: 0,
+      imageUrl: "",
+      isActive: true,
+    });
+
+    setShowProductForm(false);
+  } catch (error) {
+    const message = (
+      error as {
+        response?: { data?: { message?: string } };
+      }
+    ).response?.data?.message;
+
+    setProductFormError(message || "Failed to add product.");
+  } finally {
+    setIsSavingProduct(false);
+  }
+};
+
+
+
   return (
     <div className="min-h-screen bg-white text-slate-900">
       {/* Navigation */}
@@ -722,11 +775,286 @@ const handleShowAdminDashboard = async () => {
            setProductFormSuccess("");
            setShowProductForm(true);
           }}
-          className="rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-3 font-bold text-white shadow-lg transition hover:scale-105"
+          className="mt-5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-3 font-bold text-white shadow-lg transition hover:scale-105"
            >
           + Add New Product
          </button>
          </div>
+
+
+{/* Add Product Form */}
+{showProductForm && (
+  <div className="mb-8 rounded-2xl border border-blue-100 bg-gradient-to-br from-white to-blue-50 p-6 shadow-lg">
+
+    <h3 className="mb-5 text-xl font-black text-slate-800">
+      Add New Product
+    </h3>
+
+    <form onSubmit={handleCreateProduct} className="space-y-4">
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+
+        <div>
+          <label className="mb-2 block text-sm font-semibold text-slate-700">
+            Product Name
+          </label>
+          <input
+            type="text"
+            required
+            value={productForm.name}
+            onChange={(e) =>
+              setProductForm({ ...productForm, name: e.target.value })
+            }
+            placeholder="Enter product name"
+            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-blue-500"
+          />
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm font-semibold text-slate-700">
+            Category
+          </label>
+          <select
+            value={productForm.category}
+            onChange={(e) =>
+              setProductForm({ ...productForm, category: e.target.value })
+            }
+            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-blue-500"
+          >
+            <option value="Football">Football</option>
+            <option value="Cricket">Cricket</option>
+            <option value="Fitness">Fitness</option>
+            <option value="Basketball">Basketball</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm font-semibold text-slate-700">
+            Price (Rs.)
+          </label>
+          <input
+            type="number"
+            required
+            min="0.01"
+            step="0.01"
+            value={productForm.price}
+            onChange={(e) =>
+              setProductForm({ ...productForm, price: Number(e.target.value) })
+            }
+            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-blue-500"
+          />
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm font-semibold text-slate-700">
+            Stock Quantity
+          </label>
+          <input
+            type="number"
+            required
+            min="0"
+            step="1"
+            value={productForm.stockQuantity}
+            onChange={(e) =>
+              setProductForm({
+                ...productForm,
+                stockQuantity: Number(e.target.value),
+              })
+            }
+            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-blue-500"
+          />
+        </div>
+
+      </div>
+
+      <div>
+        <label className="mb-2 block text-sm font-semibold text-slate-700">
+          Product Description
+        </label>
+        <textarea
+          required
+          rows={3}
+          value={productForm.description}
+          onChange={(e) =>
+            setProductForm({ ...productForm, description: e.target.value })
+          }
+          placeholder="Enter product description"
+          className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-blue-500"
+        />
+      </div>
+
+      <div>
+        <label className="mb-2 block text-sm font-semibold text-slate-700">
+          Product Image URL
+        </label>
+        <input
+          type="text"
+          required
+          value={productForm.imageUrl}
+          onChange={(e) =>
+            setProductForm({ ...productForm, imageUrl: e.target.value })
+          }
+          placeholder="/images/football.jpg"
+          className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-blue-500"
+        />
+      </div>
+
+      <label className="flex items-center gap-3 text-sm font-semibold text-slate-700">
+        <input
+          type="checkbox"
+          checked={productForm.isActive}
+          onChange={(e) =>
+            setProductForm({ ...productForm, isActive: e.target.checked })
+          }
+          className="h-4 w-4 accent-blue-600"
+        />
+        Product is Active
+      </label>
+
+      {productFormError && (
+        <p className="rounded-lg bg-red-50 p-3 text-sm text-red-600">
+          {productFormError}
+        </p>
+      )}
+
+      <div className="flex flex-wrap justify-end gap-3">
+
+        <button
+          type="button"
+          onClick={() => setShowProductForm(false)}
+          className="rounded-xl border border-slate-300 bg-white px-5 py-3 font-semibold text-slate-600 hover:bg-slate-100"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          disabled={isSavingProduct}
+          className="rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3 font-bold text-white shadow-lg hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50"
+        >
+          {isSavingProduct ? "Saving..." : "Save Product"}
+        </button>
+
+      </div>
+
+    </form>
+  </div>
+)}
+
+
+
+{/* Product Management Section */}
+<div className="mb-10">
+
+  <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h3 className="text-xl font-black text-slate-800">
+        Product Management
+      </h3>
+      <p className="mt-1 text-sm text-slate-500">
+        Manage all SportNest products
+      </p>
+    </div>
+
+    <span className="rounded-full bg-blue-100 px-4 py-2 text-sm font-bold text-blue-700">
+      {products.length} Products
+    </span>
+  </div>
+
+  {products.length === 0 ? (
+    <p className="rounded-xl bg-slate-50 p-8 text-center text-slate-500">
+      No products available.
+    </p>
+  ) : (
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+      {products.map((product) => (
+        <div
+          key={product._id}
+          className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:shadow-lg"
+        >
+          <img
+            src={product.imageUrl}
+            alt={product.name}
+            className="h-40 w-full bg-slate-100 object-contain p-3"
+          />
+
+          <div className="p-4">
+            <p className="text-xs font-bold uppercase tracking-wider text-blue-600">
+              {product.category}
+            </p>
+
+            <h4 className="mt-1 text-lg font-bold text-slate-800">
+              {product.name}
+            </h4>
+
+            <p className="mt-2 font-black text-blue-700">
+              Rs. {product.price.toLocaleString()}
+            </p>
+
+            <p className="mt-1 text-sm text-slate-500">
+              Stock: {product.stockQuantity}
+            </p>
+            
+            
+          <div className="mt-4 flex gap-2">
+            <button
+             type="button"
+             onClick={() => {
+             setProductFormError("");
+             setProductFormSuccess("");
+             setProductForm({
+             name: product.name,
+             description: product.description,
+             price: product.price,
+             category: product.category,
+             stockQuantity: product.stockQuantity,
+             imageUrl: product.imageUrl,
+             isActive: product.isActive,
+            });
+             setShowProductForm(true);
+            }}
+            className="flex-1 rounded-lg bg-blue-600 px-3 py-2 text-sm font-bold text-white hover:bg-blue-700"
+           >
+           Edit
+          </button>
+
+          <button
+          type="button"
+          onClick={async () => {
+          if (!window.confirm(`Delete ${product.name}?`)) return;
+
+         try {
+          await deleteProduct(product._id);
+          setProducts((previousProducts) =>
+           previousProducts.filter((item) => item._id !== product._id)
+          );
+        } catch (error) {
+          alert("Failed to delete product.");
+        }
+       }}
+        className="flex-1 rounded-lg bg-red-500 px-3 py-2 text-sm font-bold text-white hover:bg-red-600"
+        >
+         Delete
+       </button>
+       </div>
+
+
+            <span className={`mt-3 inline-block rounded-full px-3 py-1 text-xs font-bold ${
+              product.isActive
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-700"
+            }`}>
+              {product.isActive ? "Active" : "Inactive"}
+            </span>
+          </div>
+        </div>
+      ))}
+
+    </div>
+  )}
+</div>
+
  
 
           <h3 className="mb-4 mt-8 text-xl font-bold text-slate-800">
