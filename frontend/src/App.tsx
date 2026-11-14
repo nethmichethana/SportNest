@@ -520,105 +520,107 @@ const handleShowAdminDashboard = async () => {
       {/* Navigation */}
       
      <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
-     <nav className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4">
+     
+<nav className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-x-4 gap-y-3 px-4 py-4 lg:px-6">
 
-     {/* Logo */}
-     <a href="#home" className="shrink-0 text-2xl font-black tracking-tight">
-      Sport<span className="text-blue-600">Nest.</span>
-     </a>
-
-    
-     {/* Navigation Links */}
-    <div className="hidden items-center gap-2 rounded-full border border-grey/50 bg-white/60 p-2 shadow-lg shadow-blue-100/40 backdrop-blur-xl lg:flex">
-
-  <a
-    href="#home"
-    className="rounded-full px-5 py-2.5 text-sm font-bold text-slate-700 transition-all duration-300 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-blue-600 hover:to-indigo-600 hover:text-white hover:shadow-lg hover:shadow-blue-200"
-  >
-    Home
+  {/* Logo */}
+  <a href="#home" className="shrink-0 text-2xl font-black tracking-tight">
+    Sport<span className="text-blue-600">Nest.</span>
   </a>
 
-  <a
-    href="#categories"
-    className="rounded-full px-5 py-2.5 text-sm font-bold text-slate-700 transition-all duration-300 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-blue-600 hover:to-indigo-600 hover:text-white hover:shadow-lg hover:shadow-blue-200"
-  >
-    Categories
-  </a>
+  {/* Navigation Links */}
+  <div className="hidden items-center gap-1 rounded-full border border-slate-200 bg-white/60 p-1.5 shadow-lg shadow-blue-100/40 backdrop-blur-xl xl:flex">
+    {[
+      { name: "Home", href: "#home" },
+      { name: "Categories", href: "#categories" },
+      { name: "Products", href: "#products" },
+      { name: "About", href: "#about" },
+    ].map((link) => (
+      <a
+        key={link.name}
+        href={link.href}
+        className="whitespace-nowrap rounded-full px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:bg-blue-600 hover:text-white"
+      >
+        {link.name}
+      </a>
+    ))}
+  </div>
 
-  <a
-    href="#products"
-    className="rounded-full px-5 py-2.5 text-sm font-bold text-slate-700 transition-all duration-300 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-blue-600 hover:to-indigo-600 hover:text-white hover:shadow-lg hover:shadow-blue-200"
-  >
-    Products
-  </a>
-
-  <a
-    href="#about"
-    className="rounded-full px-5 py-2.5 text-sm font-bold text-slate-700 transition-all duration-300 hover:-translate-y-0.5 hover:bg-gradient-to-r hover:from-blue-600 hover:to-indigo-600 hover:text-white hover:shadow-lg hover:shadow-blue-200"
-  >
-    About
-  </a>
-
-</div>
-
-
-<button
-  type="button"
-  onClick={handleShowMyOrders}
-  className="rounded-lg border border-blue-200 bg-white px-4 py-2.5 font-semibold text-blue-700 shadow-sm transition hover:bg-blue-50"
->
-  My Orders
-</button>
-
-
-    {/* Login, Shop Now and Cart */}
-    <div className="flex shrink-0 items-center gap-3">
-      {loggedInUser ? (
-  <div className="flex items-center gap-3">
-    <span className="font-semibold text-blue-800">
-      Hi, {loggedInUser.name}
-    </span>
-
+  {/* My Orders */}
+  {loggedInUser && (
     <button
       type="button"
-      onClick={handleLogout}
-      className="rounded-lg bg-red-500 px-5 py-2.5 font-semibold text-white shadow-md transition hover:bg-red-600 hover:shadow-lg"
+      onClick={handleShowMyOrders}
+      className="shrink-0 rounded-lg border border-blue-200 bg-white px-3 py-2.5 text-sm font-semibold text-blue-700 shadow-sm transition hover:bg-blue-50"
     >
-      Logout
+      My Orders
     </button>
-  </div>
-   ) : (
-  <button
-    type="button"
-    onClick={() => {
-      setShowLogin(true);
-      setShowRegister(false);
-    }}
-    className="rounded-lg border border-blue-200 bg-white/70 px-5 py-2.5 font-semibold text-blue-700 shadow-sm backdrop-blur-md transition hover:border-blue-500 hover:bg-blue-50 hover:shadow-md"
-  >
-    Login
-  </button>
-)}
+  )}
 
-      <a
-        href="#products"
-        className="rounded-lg bg-blue-600 px-4 py-2.5 font-semibold text-white transition hover:bg-blue-700"
-      >
-        Shop Now
-      </a>
+  {/* User Actions */}
+  <div className="ml-auto flex min-w-0 flex-wrap items-center justify-end gap-2">
 
-      {/* Shopping Cart Button */}
+    {loggedInUser ? (
+      <>
+        {/* Admin Dashboard */}
+        {loggedInUser.role === "admin" && (
+          <button
+            type="button"
+            onClick={handleShowAdminDashboard}
+            className="shrink-0 rounded-lg bg-indigo-600 px-3 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-indigo-700"
+          >
+            Admin Dashboard
+          </button>
+        )}
+
+        {/* Username */}
+        <span className="hidden whitespace-nowrap text-sm font-semibold text-blue-800 sm:block">
+          Hi, {loggedInUser.name}
+        </span>
+
+        {/* Logout */}
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="shrink-0 rounded-lg bg-red-500 px-3 py-2.5 text-sm font-semibold text-white shadow-md transition hover:bg-red-600"
+        >
+          Logout
+        </button>
+      </>
+    ) : (
       <button
+        type="button"
+        onClick={() => {
+          setShowLogin(true);
+          setShowRegister(false);
+        }}
+        className="shrink-0 rounded-lg border border-blue-200 bg-white px-4 py-2.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-50"
+      >
+        Login
+      </button>
+    )}
+
+    {/* Shop Now */}
+    <a
+      href="#products"
+      className="shrink-0 rounded-lg bg-blue-600 px-3 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+    >
+      Shop Now
+    </a>
+
+    {/* Shopping Cart */}
+    <button
       type="button"
       onClick={() => setShowCart(!showCart)}
-      className="flex items-center gap-2 whitespace-nowrap rounded-lg bg-blue-600 px-4 py-2.5 font-semibold text-white transition hover:bg-blue-700"
-      >
-      <span className="text-xl">🛒</span>
-
+      className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg bg-blue-600 px-3 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+    >
+      <span className="text-lg">🛒</span>
       <span>Cart ({cartItemCount})</span>
-      </button>
-    </div>
-   </nav>
+    </button>
+
+  </div>
+</nav>
+
   </header>
 
 
