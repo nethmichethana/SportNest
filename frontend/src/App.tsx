@@ -4,7 +4,7 @@ import type { Product } from "./types/Product";
 import { getAllProducts } from "./services/productService";
 import API from "./services/api";
 import type { Order } from "./types/Order";
-import { getMyOrders } from "./services/orderService";
+import { getMyOrders, getAllOrders, } from "./services/orderService";
 
 const categories = [
   { name: "Football", icon: "⚽", count: "120+ Products" },
@@ -132,7 +132,7 @@ const [adminOrdersLoading, setAdminOrdersLoading] =
 
 const [adminOrdersError, setAdminOrdersError] =
   useState<string>("");
-  
+
 
   const filteredProducts = products.filter((product) => {
   const search = searchTerm.trim().toLowerCase();
@@ -488,6 +488,33 @@ const handleShowMyOrders = async () => {
 };
 
 
+const handleShowAdminDashboard = async () => {
+  if (!loggedInUser || loggedInUser.role !== "admin") {
+    setShowLogin(true);
+    return;
+  }
+
+  setShowAdminDashboard(true);
+  setAdminOrdersLoading(true);
+  setAdminOrdersError("");
+
+  try {
+    const orders = await getAllOrders();
+    setAllOrders(orders);
+  } catch (error) {
+    const message = (
+      error as { response?: { data?: { message?: string } } }
+    ).response?.data?.message;
+
+    setAdminOrdersError(
+      message || "Failed to load all orders."
+    );
+  } finally {
+    setAdminOrdersLoading(false);
+  }
+};
+
+
   return (
     <div className="min-h-screen bg-white text-slate-900">
       {/* Navigation */}
@@ -593,6 +620,131 @@ const handleShowMyOrders = async () => {
     </div>
    </nav>
   </header>
+
+
+
+{/* Admin Dashboard Modal */}
+{showAdminDashboard && loggedInUser?.role === "admin" && (
+  <div className="fixed inset-0 z-[100] overflow-y-auto bg-slate-900/70 p-4 backdrop-blur-sm">
+    <div className="mx-auto my-8 max-w-6xl rounded-2xl bg-white p-6 shadow-2xl">
+
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-black text-slate-900">
+            Admin Dashboard
+          </h2>
+          <p className="mt-2 text-slate-500">
+            Manage SportNest orders
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setShowAdminDashboard(false)}
+          className="rounded-lg bg-slate-100 px-4 py-2 font-semibold text-slate-600 hover:bg-slate-200"
+        >
+          ✕ Close
+        </button>
+      </div>
+
+      {adminOrdersLoading ? (
+        <p className="py-10 text-center text-blue-600">
+          Loading orders...
+        </p>
+      ) : adminOrdersError ? (
+        <p className="py-10 text-center text-red-600">
+          {adminOrdersError}
+        </p>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+
+            <div className="rounded-xl bg-blue-50 p-5">
+              <p className="text-sm font-semibold text-blue-600">
+                Total Orders
+              </p>
+              <h3 className="mt-2 text-3xl font-black text-blue-900">
+                {allOrders.length}
+              </h3>
+            </div>
+
+            <div className="rounded-xl bg-amber-50 p-5">
+              <p className="text-sm font-semibold text-amber-600">
+                Pending Orders
+              </p>
+              <h3 className="mt-2 text-3xl font-black text-amber-900">
+                {allOrders.filter(
+                  (order) => order.status === "Pending"
+                ).length}
+              </h3>
+            </div>
+
+            <div className="rounded-xl bg-green-50 p-5">
+              <p className="text-sm font-semibold text-green-600">
+                Total Revenue
+              </p>
+              <h3 className="mt-2 text-3xl font-black text-green-900">
+                Rs. {allOrders
+                  .filter((order) => order.status !== "Cancelled")
+                  .reduce((total, order) => total + order.totalAmount, 0)
+                  .toLocaleString()}
+              </h3>
+            </div>
+
+          </div>
+
+          <h3 className="mb-4 mt-8 text-xl font-bold text-slate-800">
+            All Customer Orders
+          </h3>
+
+          {allOrders.length === 0 ? (
+            <p className="py-10 text-center text-slate-500">
+              No orders available.
+            </p>
+          ) : (
+            <div className="space-y-4">
+              {allOrders.map((order) => (
+                <div
+                  key={order._id}
+                  className="rounded-xl border border-slate-200 p-5"
+                >
+                  <div className="flex flex-wrap justify-between gap-3">
+                    <div>
+                      <p className="font-bold text-slate-800">
+                        {order.customerName}
+                      </p>
+                      <p className="text-sm text-slate-500">
+                        {order.email}
+                      </p>
+                      <p className="mt-1 text-xs text-slate-400">
+                        Order ID: {order._id}
+                      </p>
+                    </div>
+
+                    <span className="h-fit rounded-full bg-blue-100 px-4 py-2 text-sm font-bold text-blue-700">
+                      {order.status}
+                    </span>
+                  </div>
+
+                  <div className="mt-4 flex flex-wrap justify-between gap-3 border-t border-slate-100 pt-4">
+                    <span className="text-sm text-slate-500">
+                      {new Date(order.createdAt).toLocaleDateString()}
+                    </span>
+
+                    <span className="font-bold text-blue-700">
+                      Rs. {order.totalAmount.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+
+    </div>
+  </div>
+)}
 
 
 
