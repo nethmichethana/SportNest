@@ -43,6 +43,12 @@ function App() {
   const [isSendingResetEmail, setIsSendingResetEmail] = useState<boolean>(false);
   const [forgotPasswordMessage, setForgotPasswordMessage] = useState<string>("");
   const [forgotPasswordError, setForgotPasswordError] = useState<string>("");
+  const [resetPasswordMessage, setResetPasswordMessage] = useState<string>("");
+  const [resetPasswordError, setResetPasswordError] = useState<string>("");
+  const [isResettingPassword, setIsResettingPassword] = useState<boolean>(false);
+  const [newPassword, setNewPassword] = useState<string>("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState<string>("");
+  const [resetToken, setResetToken] = useState<string>("");
   const [isRegistering, setIsRegistering] = useState<boolean>(false);
   const [registerMessage, setRegisterMessage] = useState<string>("");
   const [registerError, setRegisterError] = useState<string>("");
@@ -97,6 +103,18 @@ function App() {
     fetchProducts();
   }, []);
 
+useEffect(() => {
+  const path = window.location.pathname;
+
+  if (path.startsWith("/reset-password/")) {
+    const token = path.split("/reset-password/")[1];
+
+    if (token) {
+      setResetToken(token);
+    }
+  }
+}, []);
+  
   const filteredProducts = products.filter((product) => {
   const search = searchTerm.trim().toLowerCase();
 
@@ -373,6 +391,55 @@ const handleForgotPassword = async (
     );
   } finally {
     setIsSendingResetEmail(false);
+  }
+};
+
+const handleResetPassword = async (
+  e: React.FormEvent<HTMLFormElement>
+) => {
+  e.preventDefault();
+
+  setResetPasswordMessage("");
+  setResetPasswordError("");
+
+  if (!resetToken) {
+    setResetPasswordError("Invalid password reset link.");
+    return;
+  }
+
+  if (newPassword.length < 6) {
+    setResetPasswordError("Password must contain at least 6 characters.");
+    return;
+  }
+
+  if (newPassword !== confirmNewPassword) {
+    setResetPasswordError("Passwords do not match.");
+    return;
+  }
+
+  try {
+    setIsResettingPassword(true);
+
+    const response = await API.post(
+      `/auth/reset-password/${resetToken}`,
+      { password: newPassword }
+    );
+
+    setResetPasswordMessage(response.data.message);
+
+    setNewPassword("");
+    setConfirmNewPassword("");
+
+  } catch (error) {
+    const message = (
+      error as { response?: { data?: { message?: string } } }
+    ).response?.data?.message;
+
+    setResetPasswordError(
+      message || "Password reset failed. Please try again."
+    );
+  } finally {
+    setIsResettingPassword(false);
   }
 };
 
@@ -1256,6 +1323,8 @@ const handleForgotPassword = async (
 )}
 
 
+
+
 {/* Forgot Password Modal */}
 {showForgotPassword && (
   <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/50 px-4 py-6 backdrop-blur-md">
@@ -1351,6 +1420,104 @@ const handleForgotPassword = async (
   </div>
 )}
 
+{/* Reset Password Modal */}
+{resetToken && (
+  <div className="fixed inset-0 z-[130] flex items-center justify-center bg-slate-950/60 px-4 py-6 backdrop-blur-md">
+
+    <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/50 bg-white/90 p-8 shadow-2xl shadow-blue-950/20 backdrop-blur-2xl">
+
+      {/* Decorative Background */}
+      <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-blue-400/20 blur-3xl" />
+      <div className="absolute -bottom-16 -left-16 h-40 w-40 rounded-full bg-indigo-400/20 blur-3xl" />
+
+      <div className="relative">
+
+        {/* Icon */}
+        <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-3xl text-white shadow-lg shadow-blue-200">
+          🔐
+        </div>
+
+        {/* Heading */}
+        <div className="mb-7 text-center">
+          <h2 className="text-3xl font-black tracking-tight text-slate-900">
+            Reset Password
+          </h2>
+
+          <div className="mx-auto mt-3 h-1 w-14 rounded-full bg-blue-600" />
+
+          <p className="mt-4 text-sm leading-6 text-slate-500">
+            Create a new secure password for your SportNest account.
+          </p>
+        </div>
+
+        {/* Reset Password Form */}
+        <form onSubmit={handleResetPassword} className="space-y-5">
+
+          {/* New Password */}
+          <div>
+            <label className="mb-2 block text-sm font-bold text-slate-700">
+              New Password
+            </label>
+
+            <input
+              type="password"
+              required
+              minLength={6}
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="Enter new password"
+              className="w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3.5 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+            />
+          </div>
+
+          {/* Confirm Password */}
+          <div>
+            <label className="mb-2 block text-sm font-bold text-slate-700">
+              Confirm New Password
+            </label>
+
+            <input
+              type="password"
+              required
+              minLength={6}
+              value={confirmNewPassword}
+              onChange={(e) => setConfirmNewPassword(e.target.value)}
+              placeholder="Confirm new password"
+              className="w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3.5 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+            />
+          </div>
+
+          {/* Success Message */}
+          {resetPasswordMessage && (
+            <p className="rounded-xl border border-green-200 bg-green-50 p-3 text-sm text-green-700">
+              {resetPasswordMessage}
+            </p>
+          )}
+
+          {/* Error Message */}
+          {resetPasswordError && (
+            <p className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-600">
+              {resetPasswordError}
+            </p>
+          )}
+
+          {/* Reset Button */}
+          <button
+            type="submit"
+            disabled={isResettingPassword}
+            className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3.5 font-bold text-white shadow-lg shadow-blue-200 transition duration-300 hover:-translate-y-0.5 hover:from-blue-700 hover:to-indigo-700 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isResettingPassword
+              ? "Updating Password..."
+              : "Reset Password"}
+          </button>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+)}
 
 
 {/* Registration Modal */}
