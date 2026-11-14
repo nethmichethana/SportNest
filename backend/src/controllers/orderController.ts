@@ -1,11 +1,12 @@
 
-import { Request, Response } from "express";
+import { Response } from "express";
+import { AuthRequest } from "../middleware/authMiddleware";
 import mongoose from "mongoose";
 import Order from "../models/Order";
 import Product from "../models/Product";
 
 export const createOrder = async (
-  req: Request,
+  req: AuthRequest,
   res: Response
 ): Promise<void> => {
   try {
@@ -73,6 +74,7 @@ export const createOrder = async (
     }
 
     const order = await Order.create({
+       userId: req.user!.userId,
       customerName,
       email,
       phone,
