@@ -121,6 +121,19 @@ useEffect(() => {
   }
 }, []);
   
+
+const [showAdminDashboard, setShowAdminDashboard] =
+  useState<boolean>(false);
+
+const [allOrders, setAllOrders] = useState<Order[]>([]);
+
+const [adminOrdersLoading, setAdminOrdersLoading] =
+  useState<boolean>(false);
+
+const [adminOrdersError, setAdminOrdersError] =
+  useState<string>("");
+  
+
   const filteredProducts = products.filter((product) => {
   const search = searchTerm.trim().toLowerCase();
 
