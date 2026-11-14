@@ -6,6 +6,13 @@ import API from "./services/api";
 import type { Order } from "./types/Order";
 import type { ProductInput } from "./services/productService";
 import { getMyOrders, getAllOrders, updateOrderStatus, } from "./services/orderService";
+import { useAppDispatch, useAppSelector } from "./store/hooks";
+import {
+  addToCart as addToCartAction,
+  removeFromCart as removeFromCartAction,
+  updateCartQuantity as updateCartQuantityAction,
+  clearCart as clearCartAction,
+} from "./store/slices/cartSlice";
 
 const categories = [
   { name: "Football", icon: "⚽", count: "120+ Products" },
@@ -35,7 +42,8 @@ function App() {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [sortOption, setSortOption] = useState<string>("default");
-  const [cart, setCart] = useState<(Product & { quantity: number })[]>([]);
+  const dispatch = useAppDispatch();
+  const cart = useAppSelector((state) => state.cart.items);
   const [showCart, setShowCart] = useState<boolean>(false);
   const [showCheckout, setShowCheckout] = useState<boolean>(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -189,24 +197,8 @@ const [adminOrdersError, setAdminOrdersError] =
   }
 });
 
-
-   const addToCart = (product: Product) => {
-   setCart((previousCart) => {
-   const existingProduct = previousCart.find(
-      (item) => item._id === product._id
-    );
-
-    if (existingProduct) {
-      return previousCart.map((item) =>
-        item._id === product._id
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      );
-    }
-
-   
-    return [...previousCart, { ...product, quantity: 1 }];
-  });
+const addToCart = (product: Product) => {
+  dispatch(addToCartAction(product));
 };
 
 
@@ -221,31 +213,22 @@ const [adminOrdersError, setAdminOrdersError] =
 );
 
 const updateCartQuantity = (productId: string, change: number) => {
-  setCart((previousCart) =>
-    previousCart
-      .map((item) =>
-        item._id === productId
-          ? {
-              ...item,
-              quantity: Math.max(
-                1,
-                Math.min(item.quantity + change, item.stockQuantity)
-              ),
-            }
-          : item
-      )
+  dispatch(
+    updateCartQuantityAction({
+      productId,
+      change,
+    })
   );
 };
 
 const removeFromCart = (productId: string) => {
-  setCart((previousCart) =>
-    previousCart.filter((item) => item._id !== productId)
-  );
+  dispatch(removeFromCartAction(productId));
 };
 
 const clearCart = () => {
-  setCart([]);
-}
+  dispatch(clearCartAction());
+};
+
 
 const handlePlaceOrder = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
@@ -521,7 +504,7 @@ const handleShowAdminDashboard = async () => {
   setAdminOrdersError("");
 
   try {
-    const orders = await getAllOrders();
+    const orders = await getAllOrders(); 
     setAllOrders(orders);
   } catch (error) {
     const message = (
