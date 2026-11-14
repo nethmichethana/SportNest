@@ -6,7 +6,19 @@ import {
   persistReducer,
 } from "redux-persist";
 
-import storage from "redux-persist/lib/storage";
+const storage = {
+  getItem: (key: string) => Promise.resolve(localStorage.getItem(key)),
+
+  setItem: (key: string, value: string) => {
+    localStorage.setItem(key, value);
+    return Promise.resolve(value);
+  },
+
+  removeItem: (key: string) => {
+    localStorage.removeItem(key);
+    return Promise.resolve();
+  },
+};
 
 const rootReducer = combineReducers({
   cart: cartReducer,

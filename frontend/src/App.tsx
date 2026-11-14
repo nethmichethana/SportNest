@@ -254,8 +254,8 @@ const handlePlaceOrder = async (e: React.FormEvent<HTMLFormElement>) => {
     await API.post("/orders", orderData);
 
     setOrderMessage("Order placed successfully! Thank you for shopping with SportNest.");
-
-    setCart([]);
+    
+    clearCart();
 
     setCustomerDetails({
       customerName: "",
