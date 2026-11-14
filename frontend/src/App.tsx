@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import type { Product } from "./types/Product";
 import { getAllProducts } from "./services/productService";
 import API from "./services/api";
+import type { Order } from "./types/Order";
+import { getMyOrders } from "./services/orderService";
 
 const categories = [
   { name: "Football", icon: "⚽", count: "120+ Products" },
@@ -56,6 +58,9 @@ function App() {
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
   const [loginMessage, setLoginMessage] = useState<string>("");
   const [loginError, setLoginError] = useState<string>("");
+  const [myOrders, setMyOrders] = useState<Order[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState<boolean>(false);
+  const [ordersError, setOrdersError] = useState<string>("");
   const [loggedInUser, setLoggedInUser] = useState<{
   name: string;
   email: string;
@@ -444,6 +449,32 @@ const handleResetPassword = async (
   }
 };
 
+
+const handleShowMyOrders = async () => {
+  if (!loggedInUser) {
+    setShowLogin(true);
+    return;
+  }
+
+  setShowMyOrders(true);
+  setOrdersLoading(true);
+  setOrdersError("");
+
+  try {
+    const orders = await getMyOrders();
+    setMyOrders(orders);
+  } catch (error) {
+    const message = (
+      error as { response?: { data?: { message?: string } } }
+    ).response?.data?.message;
+
+    setOrdersError(message || "Failed to load your orders.");
+  } finally {
+    setOrdersLoading(false);
+  }
+};
+
+
   return (
     <div className="min-h-screen bg-white text-slate-900">
       {/* Navigation */}
@@ -489,6 +520,16 @@ const handleResetPassword = async (
   </a>
 
 </div>
+
+
+<button
+  type="button"
+  onClick={handleShowMyOrders}
+  className="rounded-lg border border-blue-200 bg-white px-4 py-2.5 font-semibold text-blue-700 shadow-sm transition hover:bg-blue-50"
+>
+  My Orders
+</button>
+
 
     {/* Login, Shop Now and Cart */}
     <div className="flex shrink-0 items-center gap-3">
@@ -539,6 +580,114 @@ const handleResetPassword = async (
     </div>
    </nav>
   </header>
+
+
+
+{/* My Orders Modal */}
+{showMyOrders && (
+  <div className="fixed inset-0 z-[100] overflow-y-auto bg-slate-900/60 p-4 backdrop-blur-sm">
+    <div className="mx-auto my-10 max-w-4xl rounded-2xl bg-white p-6 shadow-2xl">
+
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-black text-slate-900">
+            My Orders
+          </h2>
+          <p className="mt-1 text-sm text-slate-500">
+            View your order history
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setShowMyOrders(false)}
+          className="rounded-lg bg-slate-100 px-4 py-2 font-semibold text-slate-600 hover:bg-slate-200"
+        >
+          ✕ Close
+        </button>
+      </div>
+
+      {ordersLoading ? (
+        <p className="py-10 text-center text-blue-600">
+          Loading your orders...
+        </p>
+      ) : ordersError ? (
+        <p className="py-10 text-center text-red-600">
+          {ordersError}
+        </p>
+      ) : myOrders.length === 0 ? (
+        <div className="py-12 text-center">
+          <p className="text-5xl">📦</p>
+          <h3 className="mt-4 text-xl font-bold text-slate-800">
+            No Orders Yet
+          </h3>
+          <p className="mt-2 text-slate-500">
+            Your orders will appear here.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-5">
+          {myOrders.map((order) => (
+            <div
+              key={order._id}
+              className="rounded-xl border border-slate-200 p-5 shadow-sm"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm text-slate-500">Order ID</p>
+                  <p className="font-semibold text-slate-800">
+                    {order._id}
+                  </p>
+                </div>
+
+                <span className="rounded-full bg-blue-100 px-4 py-2 text-sm font-bold text-blue-700">
+                  {order.status}
+                </span>
+              </div>
+
+              <p className="mt-3 text-sm text-slate-500">
+                Date: {new Date(order.createdAt).toLocaleDateString()}
+              </p>
+
+              <div className="mt-4 border-t border-slate-100 pt-4">
+                <h4 className="mb-2 font-bold text-slate-800">
+                  Ordered Products
+                </h4>
+
+                {order.items.map((item, index) => (
+                  <div
+                    key={`${item.productId}-${index}`}
+                    className="flex justify-between gap-3 py-2 text-sm"
+                  >
+                    <span className="text-slate-600">
+                      {item.name} × {item.quantity}
+                    </span>
+
+                    <span className="font-semibold text-slate-800">
+                      Rs. {(item.price * item.quantity).toLocaleString()}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-4 flex justify-between border-t border-slate-100 pt-4">
+                <span className="font-bold text-slate-700">
+                  Total Amount
+                </span>
+
+                <span className="text-lg font-black text-blue-700">
+                  Rs. {order.totalAmount.toLocaleString()}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+    </div>
+  </div>
+)}
+
 
 
 {/* Shopping Cart Panel */}
