@@ -1,5 +1,9 @@
+import dotenv from "dotenv";
+dotenv.config();
 import nodemailer from "nodemailer";
 
+console.log("Gmail User Loaded:", !!process.env.EMAIL_USER);
+console.log("Gmail App Password Loaded:", !!process.env.EMAIL_APP_PASSWORD);
 const emailTransporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
