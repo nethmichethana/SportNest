@@ -104,3 +104,29 @@ export const createOrder = async (
     });
   }
 };
+
+
+
+export const getMyOrders = async (
+  req: AuthRequest,
+  res: Response
+): Promise<void> => {
+  try {
+    const orders = await Order.find({
+      userId: req.user!.userId,
+    }).sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      message: "My orders retrieved successfully.",
+      data: orders,
+    });
+  } catch (error) {
+    console.error("Get My Orders Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to retrieve orders.",
+    });
+  }
+};
