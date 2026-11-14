@@ -14,3 +14,16 @@ export const getAllOrders = async (): Promise<Order[]> => {
 
   return response.data.data;
 };
+
+
+export const updateOrderStatus = async (
+  orderId: string,
+  status: Order["status"]
+): Promise<Order> => {
+  const response = await API.put(
+    `/orders/${orderId}/status`,
+    { status }
+  );
+
+  return response.data.data;
+};
