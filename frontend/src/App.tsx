@@ -7,6 +7,7 @@ import type { Order } from "./types/Order";
 import type { ProductInput } from "./services/productService";
 import { getMyOrders, getAllOrders, updateOrderStatus, } from "./services/orderService";
 import { useAppDispatch, useAppSelector } from "./store/hooks";
+import { setProducts as setProductsAction } from "./store/slices/productSlice";
 import {
   addToCart as addToCartAction,
   removeFromCart as removeFromCartAction,
@@ -35,7 +36,7 @@ const getCategoryIcon = (category: string): string => {
 
 function App() {
   
-  const [products, setProducts] = useState<Product[]>([]);
+  const products = useAppSelector((state) => state.products.items);
 
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
@@ -125,9 +126,10 @@ const [editingProductId, setEditingProductId] = useState<string | null>(null);
         setLoading(true);
         setError("");
 
-        const data = await getAllProducts();
+    const data = await getAllProducts();
 
-        setProducts(data);
+    dispatch(setProductsAction(data));
+
       } catch (err) {
         console.error("Failed to fetch products:", err);
         setError("Unable to load products. Please try again.");
@@ -265,7 +267,7 @@ const handlePlaceOrder = async (e: React.FormEvent<HTMLFormElement>) => {
     });
 
     const updatedProducts = await getAllProducts();
-    setProducts(updatedProducts);
+    dispatch(setProductsAction(updatedProducts));
 
   } catch (error) {
     const message = (
@@ -552,7 +554,7 @@ const handleCreateProduct = async (
     }
 
     const updatedProducts = await getAllProducts();
-    setProducts(updatedProducts);
+    dispatch(setProductsAction(updatedProducts));
 
     setProductForm({
       name: "",
@@ -1099,12 +1101,9 @@ return (
                   try {
                     await deleteProduct(product._id);
 
-                    setProducts((previousProducts) =>
-                      previousProducts.filter(
-                        (item) => item._id !== product._id
-                      )
-                    );
-
+                    const updatedProducts = await getAllProducts();
+                    dispatch(setProductsAction(updatedProducts));
+                    
                   } catch (error) {
                     alert("Failed to delete product.");
                   }
