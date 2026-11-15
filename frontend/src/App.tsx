@@ -7,6 +7,7 @@ import type { Order } from "./types/Order";
 import type { ProductInput } from "./services/productService";
 import { getMyOrders, getAllOrders, updateOrderStatus, } from "./services/orderService";
 import { useAppDispatch, useAppSelector } from "./store/hooks";
+import AIChat from "./components/AIChat";
 import { setProducts as setProductsAction } from "./store/slices/productSlice";
 import {
   login as loginAction,
@@ -2495,6 +2496,8 @@ return (
           discovering and managing sporting products easier.
         </p>
       </section>
+
+      <AIChat />
 
       {/* Footer */}
       <footer className="bg-slate-950 px-6 py-10 text-white">
