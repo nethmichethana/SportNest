@@ -9,6 +9,10 @@ import { getMyOrders, getAllOrders, updateOrderStatus, } from "./services/orderS
 import { useAppDispatch, useAppSelector } from "./store/hooks";
 import { setProducts as setProductsAction } from "./store/slices/productSlice";
 import {
+  login as loginAction,
+  logout as logoutAction,
+} from "./store/slices/authSlice";
+import {
   addToCart as addToCartAction,
   removeFromCart as removeFromCartAction,
   updateCartQuantity as updateCartQuantityAction,
@@ -1103,7 +1107,7 @@ return (
 
                     const updatedProducts = await getAllProducts();
                     dispatch(setProductsAction(updatedProducts));
-                    
+
                   } catch (error) {
                     alert("Failed to delete product.");
                   }
