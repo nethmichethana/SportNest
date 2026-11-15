@@ -5,6 +5,7 @@ import cors from "cors";
 import productRoutes from "./routes/productRoutes";
 import orderRoutes from "./routes/orderRoutes";
 import authRoutes from "./routes/authRoutes";
+import geminiRoutes from "./routes/geminiRoutes";
 import connectDB from "./config/db";
 
 
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/ai", geminiRoutes);
 
 app.get("/", (req, res) => {
   res.status(200).json({
