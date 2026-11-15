@@ -96,14 +96,7 @@ const [isSavingProduct, setIsSavingProduct] = useState<boolean>(false);
 const [editingProductId, setEditingProductId] = useState<string | null>(null);
 
 
-  const [loggedInUser, setLoggedInUser] = useState<{
-  name: string;
-  email: string;
-  role: string;
-} | null>(() => {
-  const savedUser = localStorage.getItem("user");
-  return savedUser ? JSON.parse(savedUser) : null;
-});
+  const loggedInUser = useAppSelector((state) => state.auth.user);
   const [loginDetails, setLoginDetails] = useState({
   email: "",
   password: "",
@@ -356,11 +349,16 @@ const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
       JSON.stringify({ name, email, role })
     );
 
-    setLoggedInUser({
-    name,
-    email,
-    role,
-    });
+  dispatch(
+    loginAction({
+     user: {
+       name,
+       email,
+       role,
+     },
+    token,
+  })
+);
 
     setLoginMessage("Login successful! Welcome to SportNest.");
 
@@ -386,7 +384,7 @@ const handleLogout = () => {
   localStorage.removeItem("token");
   localStorage.removeItem("user");
 
-  setLoggedInUser(null);
+  dispatch(logoutAction());
 };
 
 const handleForgotPassword = async (
